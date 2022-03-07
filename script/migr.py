@@ -31,6 +31,14 @@ def Inicializa():
     docker_cli.networks.create(baker_network)
     console.print("Network criada", style=st_success)
 
+    # Builda a imagem
+    docker_cli.images.build(path="./Imagens", rm=True, tag='baker:2.8.x', target="php56")
+    docker_cli.images.build(path="./Imagens", rm=True, tag='baker:2.13.x', target="php81")
+    console.print("Imagens criadas", style=st_success)
+
+
+
+
 
 def RemoverTudo():
     #Remove arquivos
@@ -40,6 +48,11 @@ def RemoverTudo():
     #Remove network
     docker_cli.networks.get(baker_network).remove()
     console.print("Network removida", style=st_error)
+
+    #Remove imagens
+    docker_cli.images.remove("baker:2.8.x")
+    docker_cli.images.remove("baker:2.13.x")
+    console.print("Imagens removidas", style=st_error)
 
 
 
