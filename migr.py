@@ -4,6 +4,7 @@ import shutil
 import os
 import docker
 from rich.console import Console
+from template import *
 
 console = Console()
 
@@ -49,24 +50,89 @@ def Inicializa():
 
 def RemoverTudo():
     #Remove arquivos
-    shutil.rmtree(baker_directory)
-    console.print("Arquivos removidos", style=st_error)
+    try:
+        shutil.rmtree(baker_directory)
+        console.print("Arquivos removidos", style=st_error)
+    except:
+        pass
+    try:
+        #Remove conteiner principal nginx
+        os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml down -v")
+        console.print("Conteiner principal nginx removido", style=st_error)
+    except:
+        pass
 
-    #Remove conteiner principal nginx
-    os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml down -v")
-    console.print("Conteiner principal nginx removido", style=st_error)
+    try:
+        #Remove container site
+        containers = docker_cli.containers.list()
+        for c in containers:
+            if c.name != 'teste-db_db_1':
+                c.remove(force=True)
+        console.print("Containers removidos", style=st_error)
 
-    #Remove network
-    docker_cli.networks.get(baker_network).remove()
-    console.print("Network removida", style=st_error)
+    except:
+        pass
 
-    #Remove imagens
-    docker_cli.images.remove("baker:2.8.x")
-    docker_cli.images.remove("baker:2.13.x")
-    console.print("Imagens removidas", style=st_error)
+    try:
+        #Remove network
+        docker_cli.networks.get(baker_network).remove()
+        console.print("Network removida", style=st_error)
+    except:
+        pass
+    try:
+        #Remove imagens
+        docker_cli.images.remove("baker:2.8.x")
+        docker_cli.images.remove("baker:2.13.x")
+        console.print("Imagens removidas", style=st_error)
+    except:
+        pass
 
 
 
+
+
+def migrarSite(args):
+
+
+    #Verfica se os parametros foram inseridos
+    if( args.dir is not None ):
+        if( not os.path.exists(args.dir) ):
+            console.print("Diretorio do site nao encontrado", style=st_error)
+            exit()
+    else:
+        console.print("Insira o diretorio atual do site (--dir)", style=st_error)
+        exit()
+
+
+
+    slug = os.path.basename(args.dir)
+    try:
+        #copia arquivos do site
+        shutil.copytree(src=args.dir, dst="{}/sites/{}".format(baker_directory, slug) )
+        #copia os arquivos novos (template, modulo separador)
+        shutil.copytree(src="./template-baker/", dst="{}/sites/{}".format(baker_directory, slug), dirs_exist_ok=True)
+        os.system("chown -R 82.82 " + baker_directory + '/sites/' + slug)
+
+    except FileExistsError:
+        console.print("{} já existe".format(baker_directory + "/sites/" + slug), style=st_error)
+        exit()
+
+    
+    try:
+        docker_cli.containers.run('baker:2.8.x' , detach=True, name=slug, 
+                        network='baker-network', volumes=["{}/sites/{}:/var/www".format(baker_directory, slug)],
+                        restart_policy={"Name": "always"})
+        
+        exit_code, output = docker_cli.containers.get(slug).exec_run("php pre-atualiza.php", workdir='/var/www')
+        console.print(output, style=st_error)
+        
+    except docker.errors.APIError:
+        console.print("Erro ao criar container", style=st_error)
+    
+
+    gerarLocationTemplateNginx(slug_arg=slug, path="{}/location/{}.conf".format(nginx_dir, slug))
+    gerarUpstreamTemplateNginx(slug_arg=slug, path="{}/upstream/{}.conf".format(nginx_dir, slug))
+    docker_cli.containers.get("nginx-baker").exec_run("nginx -s reload")
 
 
 
@@ -91,3 +157,7 @@ if (args.cmd == 'init'):
 
 if (args.cmd == 'explode'):
     RemoverTudo()
+
+if (args.cmd == 'migrate'):
+    migrarSite(args)
+

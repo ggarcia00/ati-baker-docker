@@ -1,0 +1,3 @@
+upstream php-handler-{{ slug }} {
+    server {{ slug }}:9000;
+}
