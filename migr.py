@@ -32,9 +32,16 @@ def Inicializa():
     console.print("Network criada", style=st_success)
 
     # Builda a imagem
-    docker_cli.images.build(path="./Imagens", rm=True, tag='baker:2.8.x', target="php56")
-    docker_cli.images.build(path="./Imagens", rm=True, tag='baker:2.13.x', target="php81")
+    console.print("Construindo imagens...", style='dim')
+    docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.8.x', target="php56")
+    docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.13.x', target="php81")
     console.print("Imagens criadas", style=st_success)
+
+    # Cria conteiner principal nginx
+    os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml up -d")
+    console.print("Conteiner principal nginx criado", style=st_success)
+    shutil.copytree(src='./nginx-files/', dst=nginx_dir, dirs_exist_ok=True)
+    
 
 
 
@@ -45,6 +52,10 @@ def RemoverTudo():
     shutil.rmtree(baker_directory)
     console.print("Arquivos removidos", style=st_error)
 
+    #Remove conteiner principal nginx
+    os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml down -v")
+    console.print("Conteiner principal nginx removido", style=st_error)
+
     #Remove network
     docker_cli.networks.get(baker_network).remove()
     console.print("Network removida", style=st_error)
@@ -53,6 +64,8 @@ def RemoverTudo():
     docker_cli.images.remove("baker:2.8.x")
     docker_cli.images.remove("baker:2.13.x")
     console.print("Imagens removidas", style=st_error)
+
+
 
 
 

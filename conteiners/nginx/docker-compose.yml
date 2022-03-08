@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    image: nginx:1.21.6
+    container_name: nginx-baker
+    volumes:
+      - /srv/docker/baker/nginx:/etc/nginx
+      - /srv/docker/baker/sites:/var/www
+    ports: 
+      - "8000:80"
+    networks:
+      - baker-network
+    restart: always
+
+
+networks:
+  baker-network:
+    external: true
