@@ -29,20 +29,25 @@ def Inicializa():
     console.print("Diretorios criados", style=st_success)
 
     # Cria a network principal
-    docker_cli.networks.create(baker_network)
+    # docker_cli.networks.create(baker_network)
     console.print("Network criada", style=st_success)
 
-    # Builda a imagem
+    # Builda as imagens
     console.print("Construindo imagens...", style='dim')
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.8.x', target="php56")
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.13.x', target="php81")
+    docker_cli.images.build(path="./images/php-baker", rm=True, tag='nginx-baker', target="nginx-baker")
+
     console.print("Imagens criadas", style=st_success)
 
     # Cria conteiner principal nginx
     os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml up -d")
-    console.print("Conteiner principal nginx criado", style=st_success)
+    console.print("Container principal nginx criado", style=st_success)
     shutil.copytree(src='./nginx-files/', dst=nginx_dir, dirs_exist_ok=True)
     
+
+    # Altera uid do user nginx no container para bater com o php-fpm (uid 82)
+    docker_cli.containers.get("nginx-baker").exec_run("usermod -u 82 nginx && groupmod -g 82 nginx && nginx -s reload")
 
 
 
@@ -83,6 +88,7 @@ def RemoverTudo():
         #Remove imagens
         docker_cli.images.remove("baker:2.8.x")
         docker_cli.images.remove("baker:2.13.x")
+        docker_cli.images.remove("nginx-baker")
         console.print("Imagens removidas", style=st_error)
     except:
         pass

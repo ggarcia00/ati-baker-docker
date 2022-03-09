@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   nginx:
-    image: nginx:1.21.6
+    image: nginx-baker
     container_name: nginx-baker
     volumes:
       - /srv/docker/baker/nginx:/etc/nginx
