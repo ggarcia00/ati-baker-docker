@@ -5,6 +5,7 @@ import os
 import docker
 from rich.console import Console
 from template import *
+import re
 
 console = Console()
 
@@ -29,7 +30,7 @@ def Inicializa():
     console.print("Diretorios criados", style=st_success)
 
     # Cria a network principal
-    # docker_cli.networks.create(baker_network)
+    docker_cli.networks.create(baker_network)
     console.print("Network criada", style=st_success)
 
     # Builda as imagens
@@ -44,10 +45,6 @@ def Inicializa():
     os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml up -d")
     console.print("Container principal nginx criado", style=st_success)
     shutil.copytree(src='./nginx-files/', dst=nginx_dir, dirs_exist_ok=True)
-    
-
-    # Altera uid do user nginx no container para bater com o php-fpm (uid 82)
-    docker_cli.containers.get("nginx-baker").exec_run("usermod -u 82 nginx && groupmod -g 82 nginx && nginx -s reload")
 
 
 
@@ -143,6 +140,43 @@ def migrarSite(args):
 
 
 
+def buscaVersao(dir):
+    pattern = re.compile('VERSION\', \'(.*)\'\);')
+    file = open(os.path.join(dir, 'admin/interface/version.php'), "r")
+    for line in file:
+        match = pattern.search(line)
+        if match:
+            return match.group(1)
+    return None
+    
+
+
+
+def atualizaSite(args):
+    slug = args.slug
+    if (args.slug is None):
+        console.print("Especificar parametro --slug do site", style=st_error)
+        exit()
+    site_dir = os.path.join(baker_directory, "sites", slug)
+    versao = buscaVersao(site_dir)
+    if (versao == "2.8.1"):
+
+        removedirs = ["/admin/preferences/details.php", "/admin/preferences/email.php", "/admin/preferences/password.php"
+                    , "/modules/backup", "/modules/droplets/js", "/templates/argos_theme", "/templates/classic_theme", "/templates/wb_theme"
+                    , "/config.php.new", "/install", "/config.php.new"]
+        shutil.copytree("./cms-baker/2.8.3/", site_dir, dirs_exist_ok=True)
+
+        for dir in removedirs:
+            shutil.rmtree(site_dir + dir, ignore_errors=True)
+
+        docker_cli.containers.get(slug).exec_run("php upgrade-script.php")
+        os.remove(site_dir + '/upgrade-script.php')
+        os.remove(site_dir + '/config.php.new')
+    
+        console.print("WebsiteBaker atualizado para a versão 2.8.3", style=st_success)
+
+
+
 
 parser = argparse.ArgumentParser(description='Migração sites baker para docker')
 parser.add_argument("cmd", type=str, help="Comando a ser executado")
@@ -166,4 +200,7 @@ if (args.cmd == 'explode'):
 
 if (args.cmd == 'migrate'):
     migrarSite(args)
+
+if (args.cmd == 'upgrade'):
+    atualizaSite(args)
 
