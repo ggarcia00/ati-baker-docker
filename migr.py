@@ -127,7 +127,7 @@ def migrarSite(args):
                         restart_policy={"Name": "always"})
         
         exit_code, output = docker_cli.containers.get(slug).exec_run("php pre-atualiza.php", workdir='/var/www')
-        console.print(output, style=st_error)
+        # console.print(output, style=st_error)
         
     except docker.errors.APIError:
         console.print("Erro ao criar container", style=st_error)
@@ -164,6 +164,7 @@ def atualizaSite(args):
         removedirs = ["/admin/preferences/details.php", "/admin/preferences/email.php", "/admin/preferences/password.php"
                     , "/modules/backup", "/modules/droplets/js", "/templates/argos_theme", "/templates/classic_theme", "/templates/wb_theme"
                     , "/config.php.new", "/install", "/config.php.new"]
+        # Necessário mudar o owner dos arquivos após a cópia para id 82
         shutil.copytree("./cms-baker/2.8.3/", site_dir, dirs_exist_ok=True)
 
         for dir in removedirs:
