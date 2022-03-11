@@ -164,12 +164,14 @@ def atualizaSite(args):
         removedirs = ["/admin/preferences/details.php", "/admin/preferences/email.php", "/admin/preferences/password.php"
                     , "/modules/backup", "/modules/droplets/js", "/templates/argos_theme", "/templates/classic_theme", "/templates/wb_theme"
                     , "/config.php.new", "/install", "/config.php.new"]
-        # Necessário mudar o owner dos arquivos após a cópia para id 82
+
         shutil.copytree("./cms-baker/2.8.3/", site_dir, dirs_exist_ok=True)
 
         for dir in removedirs:
             shutil.rmtree(site_dir + dir, ignore_errors=True)
 
+
+        os.system("chown -R 82.82 " + site_dir)
         docker_cli.containers.get(slug).exec_run("php upgrade-script.php")
         os.remove(site_dir + '/upgrade-script.php')
         os.remove(site_dir + '/config.php.new')
