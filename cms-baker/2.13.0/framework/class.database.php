@@ -708,7 +708,11 @@ class mysql
  */
     public function getQuery($sStatement)
     {
-        $this->result = \mysqli_query($this->oDbHandle, $sStatement);
+        try{
+            $this->result = \mysqli_query($this->oDbHandle, $sStatement);
+        }catch(Exception $e){
+            //Try catch de gambiarra pra fazer parar de dar erro na execução do upgrade-script.php
+        }
         if (\defined('DEBUG')&& DEBUG && ($this->result === false)) {
             if (DEBUG) {
                 throw new \DatabaseException(sprintf("%s \n %s",\mysqli_error($this->oDbHandle),$sStatement));

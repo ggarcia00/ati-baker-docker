@@ -164,6 +164,10 @@ class SM2_Formatter
         if (\array_key_exists('sm2_is_curr', $aPage)) {
             $currClass .= ' menu-current';
         }
+        //SEPARADOR
+        if (\array_key_exists('sm2_separador_menu', $aPage)) {
+            $currClass .= ' menu-separador-menu';
+        }
         elseif (\array_key_exists('sm2_is_parent', $aPage)) {
             // not set if false, so existence = true
             $currClass .= ' menu-parent';
@@ -587,6 +591,17 @@ function show_menu2(
             // create an in memory array of the database data based on the item's parent.
             // The array stores all elements in the correct display order.
             while (($page = $oRowset->fetchRow(MYSQLI_ASSOC))) {
+                //SEPARADOR
+                $query_sections = $database->query("SELECT module FROM " . TABLE_PREFIX . "sections WHERE page_id = '".$page['page_id']."'");
+                if ($query_sections->numRows() != 0) {
+                    while ($section = $query_sections->fetchRow()) {
+                        if ($section['module'] == 'separador_menu') {
+                            $mark['sm2_has_separador_menu'] = true;
+                            $page['sm2_separador_menu'] = true;
+                            break;
+                        }
+                    }
+                }
                 // ignore all pages that the current user is not permitted to view
                 if (\version_compare(WB_VERSION, '2.7', '>=')) { // WB >= 2.7
                     // 1. hidden pages aren't shown unless they are on the current page

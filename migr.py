@@ -6,6 +6,7 @@ import docker
 from rich.console import Console
 from template import *
 import re
+import time
 
 console = Console()
 
@@ -36,7 +37,7 @@ def Inicializa():
     # Builda as imagens
     console.print("Construindo imagens...", style='dim')
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.8.x', target="php56")
-    docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.13.x', target="php81")
+    docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.13.0', target="php81")
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='nginx-baker', target="nginx-baker")
 
     console.print("Imagens criadas", style=st_success)
@@ -84,7 +85,7 @@ def RemoverTudo():
     try:
         #Remove imagens
         docker_cli.images.remove("baker:2.8.x")
-        docker_cli.images.remove("baker:2.13.x")
+        docker_cli.images.remove("baker:2.13.0")
         docker_cli.images.remove("nginx-baker")
         console.print("Imagens removidas", style=st_error)
     except:
@@ -111,7 +112,7 @@ def migrarSite(args):
     slug = os.path.basename(args.dir)
     try:
         #copia arquivos do site
-        shutil.copytree(src=args.dir, dst="{}/sites/{}".format(baker_directory, slug) )
+        shutil.copytree(src=args.dir, dst="{}/sites/{}".format(baker_directory, slug), ignore_dangling_symlinks=True, symlinks=True )
         #copia os arquivos novos (template, modulo separador)
         shutil.copytree(src="./template-baker/", dst="{}/sites/{}".format(baker_directory, slug), dirs_exist_ok=True)
         os.system("chown -R 82.82 " + baker_directory + '/sites/' + slug)
@@ -141,8 +142,12 @@ def migrarSite(args):
 
 
 def buscaVersao(dir):
-    pattern = re.compile('VERSION\', \'(.*)\'\);')
-    file = open(os.path.join(dir, 'admin/interface/version.php'), "r")
+    if(os.path.exists(os.path.join(dir, 'admin/interface/version.json'))):
+        pattern = re.compile('VERSION":"(.*)","REVISION')
+        file = open(os.path.join(dir, 'admin/interface/version.json'))
+    else:
+        pattern = re.compile('VERSION\', \'(.*)\'\);')
+        file = open(os.path.join(dir, 'admin/interface/version.php'), "r")
     for line in file:
         match = pattern.search(line)
         if match:
@@ -166,18 +171,40 @@ def atualizaSite(args):
                     , "/config.php.new", "/install", "/config.php.new"]
 
         shutil.copytree("./cms-baker/2.8.3/", site_dir, dirs_exist_ok=True)
+        os.system("chown -R 82.82 " + site_dir)
 
         for dir in removedirs:
             shutil.rmtree(site_dir + dir, ignore_errors=True)
 
 
-        os.system("chown -R 82.82 " + site_dir)
         docker_cli.containers.get(slug).exec_run("php upgrade-script.php")
         os.remove(site_dir + '/upgrade-script.php')
         os.remove(site_dir + '/config.php.new')
     
         console.print("WebsiteBaker atualizado para a versão 2.8.3", style=st_success)
 
+    if(versao == "2.8.3"):
+        shutil.copytree("./cms-baker/2.13.0/", site_dir, dirs_exist_ok=True)
+        os.system("chown -R 82.82 " + site_dir)
+
+        old_baker = docker_cli.containers.get(slug)
+        
+        old_baker.rename(slug + "-old")
+
+        novo_baker = docker_cli.containers.run("baker:2.13.0", detach=True, name=slug, 
+                                        network='baker-network',
+                                        volumes=["{}/sites/{}:/var/www".format(baker_directory, slug)],
+                                        restart_policy={"Name" : "always"})
+
+        old_baker.stop()
+        old_baker.remove()
+        docker_cli.containers.get("nginx-baker").exec_run("nginx -s reload")
+        novo_baker.exec_run("php install/upgrade-script.php")
+        time.sleep(1)
+        novo_baker.exec_run("php install/upgrade-script.php")
+        console.print("WebsiteBaker atualizado para a versão 2.13.0")
+
+        
 
 
 
