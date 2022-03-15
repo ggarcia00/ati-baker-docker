@@ -7,6 +7,7 @@ from rich.console import Console
 from template import *
 import re
 import time
+from packaging.version import parse as parse_version
 
 console = Console()
 
@@ -124,7 +125,7 @@ def migrarSite(args):
     
     try:
         docker_cli.containers.run('baker:2.8.x' , detach=True, name=slug, 
-                        network='baker-network', volumes=["{}/sites/{}:/var/www".format(baker_directory, slug)],
+                        network='baker-network', volumes={"{}/sites/{}".format(baker_directory, slug) : {'bind' : '/var/www' , 'mode' : 'rw'}},
                         restart_policy={"Name": "always"})
         
         exit_code, output = docker_cli.containers.get(slug).exec_run("php pre-atualiza.php", workdir='/var/www')
@@ -162,9 +163,13 @@ def atualizaSite(args):
     if (args.slug is None):
         console.print("Especificar parametro --slug do site", style=st_error)
         exit()
+    if (args.upgrade_to is None):
+        console.print("Especificar parametro --upgrade-to para versão", style=st_error)
+        exit()
+
     site_dir = os.path.join(baker_directory, "sites", slug)
     versao = buscaVersao(site_dir)
-    if (versao == "2.8.1"):
+    if (parse_version(versao) == parse_version("2.8.1") and parse_version(args.upgrade_to) >= parse_version("2.8.3")): # Atualiza pra 2.8.3
 
         removedirs = ["/admin/preferences/details.php", "/admin/preferences/email.php", "/admin/preferences/password.php"
                     , "/modules/backup", "/modules/droplets/js", "/templates/argos_theme", "/templates/classic_theme", "/templates/wb_theme"
@@ -180,10 +185,12 @@ def atualizaSite(args):
         docker_cli.containers.get(slug).exec_run("php upgrade-script.php")
         os.remove(site_dir + '/upgrade-script.php')
         os.remove(site_dir + '/config.php.new')
-    
-        console.print("WebsiteBaker atualizado para a versão 2.8.3", style=st_success)
 
-    if(versao == "2.8.3"):
+        versao = "2.8.3"
+        console.print("WebsiteBaker atualizado para a versão 2.8.3", style=st_success)
+        
+
+    if(parse_version(versao) == parse_version("2.8.3") and parse_version(args.upgrade_to) == parse_version("2.13.0")):
         shutil.copytree("./cms-baker/2.13.0/", site_dir, dirs_exist_ok=True)
         os.system("chown -R 82.82 " + site_dir)
 
@@ -193,7 +200,7 @@ def atualizaSite(args):
 
         novo_baker = docker_cli.containers.run("baker:2.13.0", detach=True, name=slug, 
                                         network='baker-network',
-                                        volumes=["{}/sites/{}:/var/www".format(baker_directory, slug)],
+                                        volumes={"{}/sites/{}".format(baker_directory, slug) : {'bind' : '/var/www' , 'mode' : 'rw'}},
                                         restart_policy={"Name" : "always"})
 
         old_baker.stop()
@@ -202,7 +209,7 @@ def atualizaSite(args):
         novo_baker.exec_run("php install/upgrade-script.php")
         time.sleep(1)
         novo_baker.exec_run("php install/upgrade-script.php")
-        console.print("WebsiteBaker atualizado para a versão 2.13.0")
+        console.print("WebsiteBaker atualizado para a versão 2.13.0", style=st_success)
 
         
 
@@ -211,8 +218,8 @@ def atualizaSite(args):
 parser = argparse.ArgumentParser(description='Migração sites baker para docker')
 parser.add_argument("cmd", type=str, help="Comando a ser executado")
 parser.add_argument("--dir", type=pathlib.Path, help="Diretório onde os arquivos do site estão atualmente")
-parser.add_argument("--slug", type=str, help="slug do site para remoção com o comando remove")#No momento o programa pede a versão, mas planejo buscar essa informação nos proprios arquivos do site e !APAGAR! essa linha
-parser.add_argument("--project-version", type=str, help="Versão atual do projeto")
+parser.add_argument("--slug", type=str, help="slug do site para remoção com o comando remove")
+parser.add_argument("--upgrade-to", type=str, help="Versão alvo da atualização: \"2.8.3\" ou \"2.13.0\"")
 args = parser.parse_args()
 
 
