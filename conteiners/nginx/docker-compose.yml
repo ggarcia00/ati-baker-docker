@@ -9,7 +9,7 @@ services:
       - /srv/docker/baker/nginx:/etc/nginx
       - /srv/docker/baker/sites:/var/www
     ports: 
-      - "8000:80"
+      - "80:80"
     networks:
       - baker-network
     restart: always
