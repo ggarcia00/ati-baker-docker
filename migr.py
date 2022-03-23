@@ -26,7 +26,11 @@ nginx_dir = baker_directory + '/nginx'
 def Inicializa():
     # Inicializa os diretórios
     os.makedirs(os.path.join(baker_directory, 'nginx'))
+    os.makedirs(os.path.join(baker_directory, 'nginx', 'location'))
+    os.makedirs(os.path.join(baker_directory, 'nginx', 'upstream'))
     os.chown(os.path.join(baker_directory, 'nginx'), 101, 101)
+    os.chown(os.path.join(baker_directory, 'nginx', 'location'), 101, 101)
+    os.chown(os.path.join(baker_directory, 'nginx', 'upstream'), 101, 101)
     os.makedirs(os.path.join(baker_directory, 'sites'))
     os.chown(os.path.join(baker_directory, 'sites'), 82, 82)
     console.print("Diretorios criados", style=st_success)
@@ -52,45 +56,46 @@ def Inicializa():
 
 
 
-def RemoverTudo():
-    #Remove arquivos
-    try:
-        shutil.rmtree(baker_directory)
-        console.print("Arquivos removidos", style=st_error)
-    except:
-        pass
-    try:
-        #Remove conteiner principal nginx
-        os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml down -v")
-        console.print("Conteiner principal nginx removido", style=st_error)
-    except:
-        pass
+# def RemoverTudo():
+#     #Remove arquivos
+#     # CUIDADO! IRÁ REMOVER OUTROS CONTAINERS ALEM DOS USADOS
+#     try:
+#         shutil.rmtree(baker_directory)
+#         console.print("Arquivos removidos", style=st_error)
+#     except:
+#         pass
+#     try:
+#         #Remove conteiner principal nginx
+#         os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml down -v")
+#         console.print("Conteiner principal nginx removido", style=st_error)
+#     except:
+#         pass
 
-    try:
-        #Remove container site
-        containers = docker_cli.containers.list()
-        for c in containers:
-            if c.name != 'teste-db_db_1':
-                c.remove(force=True)
-        console.print("Containers removidos", style=st_error)
+#     try:
+#         #Remove container site
+#         containers = docker_cli.containers.list()
+#         for c in containers:
+#             if c.name != 'teste-db_db_1':
+#                 c.remove(force=True)
+#         console.print("Containers removidos", style=st_error)
 
-    except:
-        pass
+#     except:
+#         pass
 
-    try:
-        #Remove network
-        docker_cli.networks.get(baker_network).remove()
-        console.print("Network removida", style=st_error)
-    except:
-        pass
-    try:
-        #Remove imagens
-        docker_cli.images.remove("baker:2.8.x")
-        docker_cli.images.remove("baker:2.13.0")
-        docker_cli.images.remove("nginx-baker")
-        console.print("Imagens removidas", style=st_error)
-    except:
-        pass
+#     try:
+#         #Remove network
+#         docker_cli.networks.get(baker_network).remove()
+#         console.print("Network removida", style=st_error)
+#     except:
+#         pass
+#     try:
+#         #Remove imagens
+#         docker_cli.images.remove("baker:2.8.x")
+#         docker_cli.images.remove("baker:2.13.0")
+#         docker_cli.images.remove("nginx-baker")
+#         console.print("Imagens removidas", style=st_error)
+#     except:
+#         pass
 
 
 
@@ -232,8 +237,8 @@ except docker.errors.DockerException:
 if (args.cmd == 'init'):
     Inicializa()
 
-if (args.cmd == 'explode'):
-    RemoverTudo()
+# if (args.cmd == 'explode'):
+#     RemoverTudo()
 
 if (args.cmd == 'migrate'):
     migrarSite(args)
