@@ -36,7 +36,7 @@ def Inicializa():
     console.print("Diretorios criados", style=st_success)
 
     # Cria a network principal
-    docker_cli.networks.create(baker_network)
+    # docker_cli.networks.create(baker_network)
     console.print("Network criada", style=st_success)
 
     # Builda as imagens

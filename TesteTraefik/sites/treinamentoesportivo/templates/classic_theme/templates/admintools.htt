@@ -1,0 +1,30 @@
+<!-- BEGIN main_block -->
+
+<table cellpadding="3" cellspacing="0" border="0" align="center" width="100%" class="tool_table">
+
+<tr class="advanced">
+	<td colspan="3">
+		<a name="administration_tools"></a>
+		<h2>{HEADING_ADMINISTRATION_TOOLS}</h2>
+	</td>
+</tr>
+<tr>
+	<td colspan="3">
+		<ul>
+		<!-- BEGIN tool_list_block -->
+		<li>
+		<a href="{ADMIN_URL}/admintools/tool.php?tool={TOOL_DIR}">{TOOL_NAME}</a>
+		<br />{TOOL_DESCRIPTION}
+		</li>
+		<!-- END tool_list_block -->
+		</ul>
+		{TOOL_LIST}
+	</td>
+	<td>
+		&nbsp;
+	</td>
+	<td>&nbsp;</td>
+</tr>
+</table>
+
+<!-- END main_block -->

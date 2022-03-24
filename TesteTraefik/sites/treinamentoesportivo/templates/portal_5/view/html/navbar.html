@@ -1,0 +1,163 @@
+<nav class="navbar navbar-default navbar-fixed-top" style="font-family: 'Lato';">
+    <div id="header-portal" class="container">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-portal" data-aria-expanded="false">
+            <span class="sr-only">Abrir menu de navegação</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+
+        <div class="nav-menu">
+            <ul class=" nav navbar-nav col-lg-6 col-md-6 hidden-xs hidden-sm">             
+                <li class="nav navbar-nav"><a href="http://portal.uel.br/portais/pages/portais.php">Portais</a></li>
+                <li class="nav navbar-nav" style="position: relative; left: 60px;"><a href="http://portal.uel.br/estude-na-uel/">Estude na UEL</a></li>
+                <li class="nav navbar-nav" style="position: relative; left: 120px;"><a href="http://portal.uel.br/oportunidades/">Oportunidades</a></li>
+                <li class="nav navbar-nav nav-transparencia" style="position: relative; left: 180px;">
+                    <a href="http://www.uel.br/portaltransparencia/">
+                        <span>Transparência</span>
+                        <!--<img class="icone-transparencia" src="http://localhost/websitebaker/templates/verklap/img/logo-transparencia-pequeno.gif" alt="Transparência">-->
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="header-social-icons col-lg-3 col-md-4 hidden-xs hidden-sm" style="width: 101px;">
+            <ul id="nav-idiomas" class="social-icons">
+                <li><a href="https://www.facebook.com/ueloficial/" class="social-icon"> <i class="fa fa-facebook"></i></a></li>
+                <li><a href="http://www.uel.br/portal/en/" style="position: relative; bottom: 2px; left: 6px;">
+                        <img alt="Ingles" title="Inglês" src="<?php $__SERVER['DOCUMENT_ROOT']; ?>/home/view/resources/image/band-inglaterra.gif">
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="navbar-portal" class="collapse navbar-collapse" style="width: 100%;">
+            <div data-width="250px">
+                <form class="navbar-form navbar-right" id="form-search" role="search" data-width="250px">
+                    <script>
+                        (function () {
+                            var cx = '009593704343501144697:lcvt9uyumvy';
+                            var gcse = document.createElement('script');
+                            gcse.type = 'text/javascript';
+                            gcse.async = true;
+                            gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+                            var s = document.getElementsByTagName('script')[0];
+                            s.parentNode.insertBefore(gcse, s);
+                        })();
+                    </script>
+                    <gcse:search></gcse:search>
+                </form>
+            </div>
+
+            <!-- Menus da direita da navbar -->
+            <ul class="nav navbar-nav navbar-right">
+                <!--<li class="nav navbar-nav hidden-lg hidden-md"><a href="#"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> HOME</a></li>-->              
+                <li class="nav navbar-nav hidden-lg hidden-md"><a href="http://portal.uel.br/portais/pages/portais.php">PORTAIS</a></li>
+                <li class="nav navbar-nav hidden-lg hidden-md"><a href="http://portal.uel.br/estude-na-uel/">ESTUDE NA UEL</a></li>
+                <li class="nav navbar-nav hidden-lg hidden-md"><a href="http://portal.uel.br/oportunidades/">OPORTUNIDADES</a></li>
+                <li class="nav navbar-nav nav-transparencia hidden-lg hidden-md">
+                    <a href="http://www.uel.br/portaltransparencia/">
+                        <span>TRANSPARÊNCIA</span>
+                        <!--<img class="icone-transparencia" src="http://localhost/websitebaker/templates/verklap/img/logo-transparencia-pequeno.gif" alt="Transparência">-->
+                    </a>
+                </li>
+                <li class="hidden-md hidden-lg nav navbar-nav">
+                    <a role="button" id="btn-universidade-ul" data-toggle="collapse" data-target="#ul-universidade" aria-expanded="false" class="collapsed">
+                        UNIVERSIDADE <span class="caret"></span>
+                    </a>
+                    <ul id="ul-universidade" class="nav collapse" aria-expanded="false" style="height: 0px;">
+                        <li><a href="http://portal.uel.br/conheca-a-uel/">Conheça a UEL</a></li>
+                        <li><a href="http://www.uel.br/ouvidoria/wb/">Ouvidoria</a></li>
+                        <li><a href="http://www.uel.br/gabinete/portal/">Reitoria</a></li>
+                        <li class="dropdown-submenu">
+                            <a href="#">Pró-reitorias</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="http://www.uel.br/prograd/">Graduação</a></li>
+                                <li><a href="http://www.uel.br/proppg/portalnovo/">Pesquisa e Pós-Graduação</a></li>
+                                <li><a href="http://www.uel.br/proex/?novo-portal=true">Extensão</a></li>
+                                <li><a href="http://www.uel.br/proplan/novo/">Planejamento</a></li>
+                                <li><a href="http://www.uel.br/proaf/portal/">Administração e Finanças</a></li>
+                                <li><a href="http://www.uel.br/prorh/">Recursos Humanos</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="http://www.uel.br/portal/index.php?content=centros.php">Centros e Departamentos</a></li>
+                        <li><a href="http://www.uel.br/pcu/portal/">Prefeitura do Campus</a></li>
+                        <!--<li><a href="#">Orgãos de Apoio</a></li>
+                        <li><a href="#">Orgãos Suplementares</a></li>-->
+                        <li><a href="https://sistemas.uel.br/index2">Sistemas UEL</a></li>
+                        <li><a href="http://portal.uel.br/conheca-a-uel/pages/marca-e-logotipo.php">Logotipo</a></li>
+                    </ul>
+                </li>
+                <li class="hidden-md hidden-lg nav navbar-nav">
+                    <a role="button" id="btn-ensino-ul" data-toggle="collapse" data-target="#ul-ensino" aria-expanded="false" class="collapsed">
+                        ENSINO <span class="caret"></span>
+                    </a>
+                    <ul id="ul-ensino" class="nav collapse" aria-expanded="false" style="height: 0px;">
+                        <li><a href="http://www.uel.br/prograd/?content=menu_atalho/cursos_graduacao.html">Graduação</a></li>
+                        <li><a href="http://www.uel.br/proppg/portalnovo/pages/inscricoes-programas-cursos/inscricoes-por-nivel.php">Pós-graduação - Especialização e Residência</a></li>
+                        <li><a href="http://www.uel.br/proppg/portalnovo/pages/inscricoes-programas-cursos/inscricoes-por-nivel.php">Pós-graduação - Mestrado e Doutorado</a></li>
+                        <li><a href="http://www.uel.br/aplicacao/">Educação Básica</a></li>
+                        <li><a href="http://www.uel.br/aplicacao/">Ensino profissionalizante</a></li>
+                        <li><a href="http://www.uel.br/sebec//pages/processos-de-selecoes/2018/curso-pre-vestibular.php">Cursinho Pré-vestibular</a></li>
+                        <li><a href="http://www.labted.net/#!nead/ckj1">Educação a distância</a></li>
+                        <li><a href="http://www.uel.br/prograd/">PROGRAD</a></li>
+                        <li><a href="http://www.uel.br/proppg/portalnovo/">PROPPG</a></li>
+                        <li><a href="http://www.uel.br/proex/?novo-portal=true">PROEX</a></li>
+                    </ul>
+                </li>
+                <li class="hidden-md hidden-lg nav navbar-nav">
+                    <a role="button" id="btn-pesquisa-ul" data-toggle="collapse" data-target="#ul-pesquisa" aria-expanded="false" class="collapsed">
+                        PESQUISA <span class="caret"></span>
+                    </a>
+                    <ul id="ul-pesquisa" class="nav collapse" aria-expanded="false" style="height: 0px;">
+                        <li><a href="http://www.uel.br/proppg/portalnovo/pages/inscricoes-programas-cursos/inscricoes-por-nivel.php">Programas de Pós-graduação</a></li>
+                        <li><a href="https://www.sistemasweb.uel.br/?contents=system/prj/index.php">Projetos de Pesquisa</a></li>
+                        <li><a href="http://www.uel.br/proppg/portalnovo/pages/grupos-de-pesquisa.php">Grupos de Pesquisa</a></li>
+                        <li><a href="#">Inovação e Tecnologia</a></li>
+                        <li><a href="http://www.uel.br/proppg/portalnovo/pages/laboratorios.php">Laboratórios</a></li>
+                        <li><a href="http://www.aintec.com.br/">AINTEC</a></li>
+                        <li><a href="http://www.uel.br/proppg/portalnovo/">PROPPG</a></li>
+                        <li><a href="http://www.uel.br/proex/?novo-portal=true">PROEX</a></li>
+                        <li><a href="http://www.uel.br/prograd/">PROGRAD</a></li>
+                    </ul>
+                </li>
+                <li class="hidden-md hidden-lg nav navbar-nav">
+                    <a role="button" id="btn-extensao-ul" data-toggle="collapse" data-target="#ul-extensao" aria-expanded="false" class="collapsed">
+                        EXTENSÃO <span class="caret"></span>
+                    </a>
+                    <ul id="ul-extensao" class="nav collapse" aria-expanded="false" style="height: 0px;">
+                        <li><a href="#">Programas</a></li>
+                        <li><a href="#">Projetos</a></li>
+                        <li><a href="#">Serviços</a></li>
+                        <li><a href="#">PROEX</a></li>
+                        <li><a href="#">PROGRAD</a></li>
+                        <li><a href="#">PROPPG</a></li>
+                    </ul>
+                </li>
+                <li class="hidden-md hidden-lg nav navbar-nav">
+                    <a role="button" id="btn-servicos-ul" data-toggle="collapse" data-target="#ul-servicos" aria-expanded="false" class="collapsed">
+                        SERVIÇOS <span class="caret"></span>
+                    </a>
+                    <ul id="ul-servicos" class="nav collapse" aria-expanded="false" style="height: 0px;">
+                        <li><a href="#">Biblioteca</a></li>
+                        <li><a href="#">Saúde</a></li>
+                        <li><a href="#">Arte</a></li>
+                        <li><a href="#">Cultura</a></li>
+                        <li><a href="#">SEBEC</a></li>
+                        <li><a href="#">Restaurante Universitário</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="card-header container">
+    <div class="col-xs-12 col-lg-12">
+        <div class="navbar-header">
+            <div class="navbar-brand-outer navbar-right">
+                <a href="http://portal.uel.br/home/"><div class="logo-uel"></div></a>
+            </div>
+        </div>
+    </div>
+</div>

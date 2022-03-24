@@ -1,0 +1,107 @@
+<!-- BEGIN main_block -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Browse Media</title>
+<link href="{THEME_URL}/media.css" rel="stylesheet" type="text/css" />
+<link href="{THEME_URL}/jquery/plugins/fancybox/fancybox.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+function confirm_link(message, url) {
+	if(confirm(message)) location.href = url;
+}
+</script>
+
+<script src="{INCLUDE_PATH}/jquery/jquery-min.js" type="text/javascript"></script>
+<script src="{THEME_URL}/jquery/jquery-fixedheader.js" type="text/javascript"></script>
+<script src="{THEME_URL}/jquery/plugins/fancybox/jquery-fancybox.js" type="text/javascript"></script>
+<script src="{THEME_URL}/jquery/jquery-metadata.js" type="text/javascript"></script>
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){
+	$("#browser").fixedHeader({
+		width: '100%', height: 355
+	});
+
+	$("table#browser a.preview").fancybox({
+		'hideOnContentClick': true,
+		'overlayShow': true,
+		'zoomSpeedIn': 0,
+		'zoomSpeedOut': 0
+	});
+})
+</script>
+
+</head>
+<body onload="parent.document.create.target.value = '{MEDIA_DIRECTORY}{CURRENT_DIR}'; parent.document.upload.target.value = '{MEDIA_DIRECTORY}{CURRENT_DIR}';">
+<table cellpadding="4" cellspacing="0" border="0" width="100%" class="browse_header">
+	<tr>
+		<td align="left" width="100">
+			<a href="{PARENT_DIR_LINK}">
+				<img src="{THEME_URL}/images/up_folder_16.png" border="0" class="{DISPLAY_UP_ARROW}" alt="^" align="absmiddle" />
+			</a>
+			<a href="{PARENT_DIR_LINK}" class="{DISPLAY_UP_ARROW}">
+				{TEXT_UP}
+			</a>
+		</td>
+		<td align="center">
+			{TEXT_CURRENT_FOLDER}: {MEDIA_DIRECTORY}{CURRENT_DIR}
+		</td>
+		<td align="right" width="100" >
+			<a href="browse.php?dir={CURRENT_DIR}">
+				<img src="{THEME_URL}/images/reload_16.png" border="0" alt="" align="absmiddle" />
+			</a>
+			<a id="reload" href="browse.php?dir={CURRENT_DIR}">
+				{TEXT_RELOAD}
+			</a>
+		</td>
+	</tr>
+</table>
+
+<table id="browser" cellpadding="4" cellspacing="0" border="0" width="100%" class="{DISPLAY_LIST_TABLE}">
+	<thead>
+		<tr style="background-color: #EEE;">
+			<th width="18" class="headline">{TEXT_TYPE}</th>
+			<th align="left" class="headline">{TEXT_NAME}</th>
+			<th align="right" width="80" class="headline">{TEXT_SIZE}</th>
+			<th align="right" width="80" class="headline">{TEXT_DATE}</th>
+			<th align="right" width="40" class="headline">{TEXT_RENAME}</th>
+			<th align="right" width="40" class="headline">{TEXT_DELETE}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- BEGIN list_block -->
+		<tr style="background-color: #{ROW_BG_COLOR}" onmouseover="this.style.backgroundColor = '#F1F8DD'" onmouseout="this.style.backgroundColor = '#{ROW_BG_COLOR}'">
+			<td style="padding-left: 10px;">
+				<img src="{FILETYPE_ICON}" class="{DISPLAY_ICON}" border="0" alt="" />
+			</td>
+			<td>
+				<a href="{LINK}" target="{LINK_TARGET}" class="{PREVIEW}">
+					{NAME}
+				</a>
+			</td>
+			<td align="right" style="font-size: 10px;">{SIZE}</td>
+			<td align="right" style="font-size: 10px;">{DATE}</td>
+			<td align="right" class="{DISPLAY_RENAME}">
+				<a href="rename.php?dir={CURRENT_DIR}&id={TEMP_ID}" title="{TEXT_RENAME}">
+					<img src="{THEME_URL}/images/modify_16.png" alt="" border="0" />
+				</a>
+			</td>
+			<td style="padding-right: 5px;" align="right" class="{DISPLAY_DELETE}">
+				<a href="#" onclick="javascript: confirm_link('{CONFIRM_DELETE}\n {NAME_SLASHED}', 'delete.php?dir={CURRENT_DIR}&id={TEMP_ID}');" title="{TEXT_DELETE}">
+					<img src="{THEME_URL}/images/delete_16.png" alt="" border="0" />
+				</a>
+			</td>
+		</tr>
+		<!-- END list_block -->
+</table>
+
+<span class="{DISPLAY_NONE_FOUND}">
+<br />
+&nbsp; &nbsp; 
+{NONE_FOUND}
+</span>
+
+</body>
+</html>
+
+<!-- END main_block -->

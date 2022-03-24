@@ -1,0 +1,46 @@
+.required {
+	color: #FF0000;
+}
+.field_title {
+	font-size: 12px;
+	width: 100px;
+	vertical-align: top;
+	text-align:right;
+}
+.textfield {
+	font-size: 12px;
+	width: 200px;
+}
+.textarea {
+	font-size: 12px;
+	width: 90%;
+	height: 100px;
+}
+.field_heading {
+	font-size: 12px;
+	font-weight: bold;
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	border-bottom-color: #666666;
+	padding-top: 10px;
+	color: #666666;
+}
+.select {
+	font-size: 12px;
+}
+.checkbox_label {
+	font-size: 11px;
+	cursor: pointer;
+}
+.radio_label {
+	font-size: 11px;
+	cursor: pointer;
+}
+.email {
+	font-size: 12px;
+	width: 200px;
+}
+/*** Don't remove the class nixhier, this is required for ASP ***/
+.nixhier {
+	display:none;
+}

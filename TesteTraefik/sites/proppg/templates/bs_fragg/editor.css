@@ -1,0 +1,145 @@
+html, body{
+	font:  100%/130% Arial, Helvetica, sans-serif;    
+  	background: #fff;
+}
+
+a{
+	transition:0.5s all;
+}
+
+a.about-btn{
+	background:#4d7f88;
+	padding:0.8em 1.2em;
+	text-transform:uppercase;
+	color:#fff;
+	font-weight:700;
+	display:inline-block;
+	margin-top:1em;
+	text-decoration:none;
+	font-size: 0.875em;
+	border-radius:0.5em;
+}
+a.about-btn:hover{
+	background:#26a5bd;
+}
+
+
+p { }
+
+h1, h2, h3, h4 {
+	padding: 0;
+	margin: 5px 0 5px 0;
+	color: #4d7f88;
+}
+
+
+h1 {
+	font-size: 1.8em;
+	font-weight: normal;
+	line-height:120%;	
+}
+
+h2 {	
+	font-size: 1.6em;		
+}
+
+
+h3 { font-size: 1.2em; }
+
+h4 { font-size: 1em; line-height:140%; margin:4px 0 0 0;}
+h5 { font-size: 0.9em; line-height:120%; margin:4px 0 0 0;}
+h6 { font-size: 0.8em; line-height:120%; margin:2px 0 0 0;}
+
+
+
+hr{
+	border:none;
+	border-bottom:dotted #999 1px; height:1px;	
+	clear:both;
+}
+
+
+li {	
+	padding-bottom: 4px;		
+} 
+
+ul {	
+	margin-top: 0;
+	margin-bottom: 10px;
+	margin-left: 0.9em;
+	padding-left: 0.9em;
+	list-style-image: url(images/li.gif);
+	list-style-type: square	
+}
+
+
+
+ol {	
+	margin-top: 0;
+	margin-bottom: 10px;
+	margin-left: 0.9em;
+	padding-left: 0.9em;		
+}
+
+
+address {
+	line-height:120%;
+	margin: 10px 0 20px 0;
+	padding-left: 10px;
+	border-left: 6px solid #327893;
+	font-style: normal;
+	font-weight: bold;
+	}
+
+
+blockquote {
+	background:transparent url(images/bg50.png);
+	font-size:0.9em;
+	padding: 10px;
+	border-left: 2px solid #4d7f88;
+	margin: 3px 0 20px 5%;
+}
+
+pre, code {
+	padding: 0 0 20px 6px;
+	margin: 3px 0 20px 0;
+	border-top: 1px solid #327893;
+	border-right: 1px solid #327893;
+	border-bottom: 1px solid #327893;	
+	border-left: 6px solid #327893;
+	background:transparent url(images/bg75.png);
+	
+	color: #327893;
+	font-size:1em;	
+	overflow:auto; 
+	line-height:2.2em;	
+		
+}
+
+table {	
+	border-collapse:collapse;	
+	border-top: 1px solid #4d7f88;
+	margin-top: 3px;
+	margin-bottom:5px;
+	width:100%;
+	font: 0.85em;	
+}
+table caption {font-size:1.1em; text-align:left; }
+table th {font-size:0.9em; padding: 4px; text-align:left; vertical-align: top;  background:transparent url(images/bg75.png); border-bottom: 1px solid #4d7f88;}
+table tbody td {font-size:0.9em; padding: 4px; vertical-align: top;  background:transparent url(images/bg50.png); border-bottom: 1px solid #4d7f88;}
+table tbody tr:hover td {background-color:#fff;}
+tbody td p, tbody td h1, tbody td h2, tbody td h3, tbody td h4 {margin: 0; line-height:110%;}
+
+
+/*-----------------------------------------------------------------*/	
+
+/* Specials */
+p img[align="right"], h3 img[align="right"] { float:right; margin: 4px 0 5px 10px; max-width: 49%;}
+p img[align="left"], h3 img[align="left"] { float:left; margin: 4px 10px 5px 0; max-width: 49%;}
+
+
+input [type="text"],input [type="submit"],input [type="button"],textarea{
+	-webkit-appearance:none;
+}
+
+

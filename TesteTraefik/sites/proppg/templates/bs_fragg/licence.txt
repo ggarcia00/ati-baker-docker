@@ -1,0 +1,28 @@
+  
+Template Licence for bs_fragg
+
+MIT License / GPL License
+
+You may (should!) remove the footerlink and set a link to http://www.webeye.at/ somewhere visible on your page.
+For example at the imprint ("based on a design by <a href="http://www.webeye.at" target="_blank">Chio Maisriml</a>")
+
+***********************************************************************************************************************
+
+Sie dürfen das Template nach Ihren Geschmack und nach Belieben anpassen und ändern.
+Auf manchen Seiten erscheint ein dezenter Hinweis auf den Urheber webeye.at mitsamt Link.
+Gerne können Sie den entsprechenden PHP-Code entfernen und stattdessen im Impressum (vorzugsweise) 
+einen analogen Hinweis + Link auf www.webeye.at setzen.
+Wenn Sie finden, dass Ihre Änderungen sehr weitgehend sind, kann der Hinweis auch abgeändert werden zu:
+
+Design von [Ihr Name]
+Basierend auf einem Konzept von <a href="http://www.webeye.at" target="_blank">webdesign vienna</a>
+Sie können den Linktext auch gerne ändern.
+
+
+Mit dieser Lizenz erwirbt der Nutzer und Lizenznehmer kein geistiges Eigentumsrecht an dem Template.
+Das Template ist in allen Bestandteilen geistiges Eigentum des Lizenzgebers und unterliegt dem 
+gesetzlich geregelten Urheberrecht.
+
+
+***********************************************************************************************************************
+

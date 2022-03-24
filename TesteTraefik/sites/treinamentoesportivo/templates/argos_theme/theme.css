@@ -1,0 +1,139 @@
+
+html {
+overflow: -moz-scrollbars-vertical;  /* Force firefox to always show room for a vertical scrollbar */
+}
+
+body,td,th,input,textarea {font-family:verdana,arial,helvetica,sans-serif;font-size:11px;color:#333;}
+body {background:#f9f9f9 url(images/background.jpg) 0 0 repeat-x;margin:0;text-align:center;}
+img {	border: 0px;}
+
+#admin_header {text-align:center;width:900px;height:105px;margin:0 auto;padding:10px 0 0 0;}
+#admin_header a#website_title {display:block;text-align:left;font-size:14px;font-weight:bold;color:#fff;text-transform:uppercase;text-decoration:none;}
+#topmenu {float:right;text-align:right;color:#fff;}
+#topmenu a {font-size:11px;color:#fff;text-decoration:underline;margin:0 5px;}
+#topmenu .version {font-size:11px;color:#7cacda;padding:0 10px 0 0;}
+#header_top {height:78px;}
+
+h1 {text-align:left;font-size:15px;color:#fff;text-transform:uppercase;}
+h2 {text-align:left;font-size:18px;color:#000;margin:5px 0;font-family:arial,sans-serif;letter-spacing:-1px;font-weight:normal;}
+h3 {text-align:left;font-size:14px;color:#000;margin:5px 0;}
+
+a:link, a:visited, a:active {color:#28609b;text-decoration:none;}
+a:hover {text-decoration:underline;color:#28609b;}
+
+.menu {margin:0 auto;padding:0;text-align:center;width:900px;}
+.menu ul {list-style-type:none;margin:0;padding:0;}
+.menu li {display:inline;margin:0 2px 0 0;padding:0;font-weight:bold;border-bottom:3px solid #c9c9c9;}
+.menu a {float:left;color:#fff !important;background:#28609b url(images/tabl.jpg) no-repeat left top;margin:0 5px 0 0;padding:0 0 0 3px;text-decoration:none;border-bottom:3px solid #cacaca;}
+.menu a span {display:block;background:#28609b url(images/tabr.jpg) no-repeat right top;padding:6px 9px 6px 6px;}
+.menu a:hover, .menu a:hover span {background-color:#28609b;text-decoration:none;}
+.menu .current a, .menu a:hover {border-bottom:3px solid #d25e59;}
+
+#content_container {text-align:center;width:900px;clear:both;margin:0 auto;}
+.content {margin:0;padding:20px 0;width:900px;text-align:left;vertical-align:top;}
+
+hr {margin:15px 0;color:#003366;height:1px;}
+
+.hide {display:none;}
+.note {color:#666;font-size:10px;}
+
+form {margin:0;}
+label {cursor:pointer;}
+input:focus, select:focus, textarea:focus {background:#f1f8fd;}
+
+/* WB2.8 STYLES */
+.img_noborder img {border:0;}
+iframe {border:1px solid #35373a;}
+div.box {font-size:small;width:100%;text-align:right;margin:-10px 0 0 0;}
+.section {margin-top:10px;padding:0;border:1px solid #999;height:75px;width:100%;background-color:#fdfdfd;}
+.graphic {width:50px;height:50px;border:4px solid #fdfdfd;padding-left:3px;}
+.graphic img {vertical-align:middle;background-color:#fff;padding:4px;border:1px solid #d0d0d0;}
+.title {text-align:left;font-weight:bold;font-size:14px;margin-bottom:5px;}
+.description {text-align:left;padding:4px 4px 0 4px;}
+.note {color:#666;font-size:10px;}
+.bold {font-weight:bold;}
+
+.submit, .cancel {width:100px;margin-top:5px;}
+.form_submit {width:100%;}
+.form_submit .left {text-align:left;}
+.form_submit .right {text-align:right;}
+.input_small {width:20px;}
+.input_narrow {width:100px;}
+.input_normal {width:120px;}
+.input_medium {width:150px;}
+.input_wide {width:200px;}
+.input_large {width:300px;}
+.input_full {width:100%;}
+select option.disabled {color:#aaa;}
+
+.jsadmin_drag img {margin-top:2px;vertical-align:top;cursor:pointer;}
+.jsadmin_drag img:hover {/* background-color: lightgrey; */}
+.modify_link {padding:4px 0 0 7px;}
+
+.settings_table td {vertical-align:top;text-align:left;padding:5px;}
+.setting_name {width:10%;min-width:180px;}
+.setting_value { width: 90%}
+.setting_value input, .setting_value select, .setting_value textarea {width:100%;}
+.setting_value textarea {height:50px;}
+
+#admintools ul {padding:0;margin:0;}
+#admintools li {list-style-type:none;display:inline;float:left;width:48%;margin:0 10px 0 0;}
+
+.value_input input, .value_input text, .value_input select {width:100%;}
+#file_mode input, #dir_mode input {width:12px;height:12px;}
+#hide2 {display:none;}
+
+.pages_list {font-weight:bold;}
+.pages_list .icon_col td img {display:block;border-style:none;float:left;padding-right:7px;}
+.pages_list table {width:900px;}
+.pages_list ul {margin:0;font-weight:normal;padding: 0;}
+.pages_list ul li {list-style-type:none;margin:2px 0;}
+
+table.pages_view {width:900px;}
+table.pages_view tr, tr.sectionrow {background:#f0f0f0;}
+table.pages_view tr:hover, tr.sectionrow:hover {background:#eaeff6;}
+tr.sectionrow {padding:0 10px;}
+tr.sectionrow td {border-top:3px solid #f9f9f9;}
+
+.page_list {display:none;}
+.page_list_show li {display:block;}
+img.page_list_rights {border:none;float:left;margin:0;vertical-align:middle;}
+
+.sections_list {font-weight:bold;padding-left:10px;}
+.sections_list table {width:900px;}
+
+
+.header_list_type {text-align:left;}
+.header_list_block {text-align:left;width:180px;}
+.header_list_pubdate_start {text-align:left;width:200px;}
+.header_list_pubdate_end {text-align:left;width:200px;}
+.header_list_sections_actions {text-align:left;width:30px;}
+.header_list_section_id {width:30px;text-align:right;}
+
+
+.list_section_id {width:30px;text-align:right;}
+.list_pubdate_start {text-align:left;width:200px;}
+.list_pubdate_end {text-align:left;width:200px;}
+/*
+.header_list_page_title {text-align:left;}
+.header_list_menu_title {width:300px;text-align:left;}
+.header_list_page_id{width:50px;text-align:left;}
+.list_page_title {text-align:left;}
+.list_menu_title {width:300px;text-align:left;}
+.list_page_id {width:50px;text-align:left;}
+*/
+.header_list_menu_title {text-align:left;}
+.header_list_page_title {width:300px; text-align:left;}
+.header_list_page_id {width:50px; text-align: right; padding-right:15px;}
+.header_list_actions {width:150px; text-align:left;}
+
+.list_menu_title {text-align:left;}
+.list_page_title {width:300px;text-align:left; }
+
+.list_page_id {width:50px;text-align: right; padding-right:15px;}
+.list_actions {width:25px;text-align:left;}
+
+.value_page_code {color: #006400; font-weight: 400; width: 240px; }
+.list_page_code { width: 240px; }
+.list_page_language { width: 240px; }
+#multi_lingual { font-weight: bolder; }

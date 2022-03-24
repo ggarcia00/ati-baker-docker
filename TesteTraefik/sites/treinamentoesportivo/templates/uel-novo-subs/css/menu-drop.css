@@ -1,0 +1,135 @@
+/********************** CSS para Menu DROP **********************/
+
+ul#nivel-0,
+ul#nivel-0 ul {
+    margin: 0;
+    padding: 0;
+    width: 141px; /* Width of Menu Items */
+    border-bottom: 2px solid #fff;
+    background: #ebeaea; /* IE6 Bug */
+    font-size: 100%;
+
+    background-color: #EBEAEA;
+    color: black;
+    font-size: 7.5pt;
+    font-weight: bold;
+    float: left;
+    padding: 0px 0px 0px 0px;
+    position: relative;
+    left: 4px;
+    }
+
+ul#nivel-0 li {
+    position: relative;
+    list-style: none;
+    }
+
+ul#nivel-0 li a {
+    display: block;
+    text-decoration: none;
+    color: #000;
+    padding: 3px;
+    border: 2px solid #fff;
+    border-bottom: 0;
+    }
+
+/* Fix IE. Hide from IE Mac \*/
+* html ul#nivel-0 li { float: left; height: 1%; }
+* html ul#nivel-0 li a { height: 1%; }
+/* End */
+
+ul#nivel-0 ul {
+    position: absolute;
+    display: none;
+    left: 141px; /* Set 2px less than menu width */
+    top: 0;
+    }
+
+ul#nivel-0 li ul li a { padding: 5px 5px; } /* Sub Menu Styles */
+
+ul#nivel-0 li:hover ul ul,
+ul#nivel-0 li:hover ul ul ul,
+ul#nivel-0 li.over ul ul,
+ul#nivel-0 li.over ul ul ul {  display: none; } /* Hide sub-menus initially */
+
+ul#nivel-0 li:hover ul,
+ul#nivel-0 li li:hover ul,
+ul#nivel-0 li li li:hover ul,
+ul#nivel-0 li.over ul,
+ul#nivel-0 li li.over ul,
+ul#nivel-0 li li li.over ul { display: block; } /* The magic */
+
+ul#nivel-0 li.submenu { background: transparent url(/skin/pro-reitorias/images/menu-seta.gif) right center no-repeat; }
+
+ul#nivel-0 li.submenu:hover,
+ul#nivel-0 li.over { color: #fff; background-color: #99CC99; }
+
+ul#nivel-0 li a:hover { color: #fff; background-color: #99CC99;}
+
+
+
+ul#canais,
+ul#canais ul {
+    margin: 0;
+    padding: 0;
+    width: 141px; /* Width of Menu Items */
+    border-bottom: 2px solid #fff;
+    background: #ebeaea; /* IE6 Bug */
+    font-size: 100%;
+
+    background-color: #EBEAEA;
+    color: black;
+    font-size: 7.5pt;
+    font-weight: bold;
+    float: left;
+    padding: 0px 0px 0px 0px;
+    position: relative;
+    left: 4px;
+    }
+
+ul#canais li {
+    position: relative;
+    list-style: none;
+    }
+
+ul#canais li a {
+    display: block;
+    text-decoration: none;
+    color: #000;
+    padding: 3px;
+    border: 2px solid #fff;
+    border-bottom: 0;
+    }
+
+/* Fix IE. Hide from IE Mac \*/
+* html ul#canais li { float: left; height: 1%; }
+* html ul#canais li a { height: 1%; }
+/* End */
+
+ul#canais ul {
+    position: absolute;
+    display: none;
+    left: 141px; /* Set 2px less than menu width */
+    top: -110;
+    }
+
+ul#canais li ul li a { padding: 5px 5px; } /* Sub Menu Styles */
+
+ul#canais li:hover ul ul,
+ul#canais li:hover ul ul ul,
+ul#canais li.over ul ul,
+ul#canais li.over ul ul ul {  display: none; } /* Hide sub-menus initially */
+
+ul#canais li:hover ul,
+ul#canais li li:hover ul,
+ul#canais li li li:hover ul,
+ul#canais li.over ul,
+ul#canais li li.over ul,
+ul#canais li li li.over ul { display: block; } /* The magic */
+
+ul#canais li.submenu { background: transparent url(/skin/pro-reitorias/images/menu-seta.gif) right center no-repeat; }
+
+ul#canais li.submenu:hover,
+ul#canais li.over { color: #fff; background-color: #99CC99; }
+
+ul#canais li a:hover { color: #fff; background-color: #99CC99;}

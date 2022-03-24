@@ -1,0 +1,925 @@
+#conteudo-portal
+{
+    color: white;
+    background:transparent url("/skin/pro-reitorias/images/background-risco-cinza-escuro.gif");
+    background-repeat:repeat;
+    border: 3px solid #C2BBAC;
+    padding: 0px 0px 0px 0px;
+    margin: -5px auto 0px auto;
+    width: 780px;
+    height: auto;
+    text-align: left;
+    position: absolute;
+}
+#editais-resultados-informativos
+{
+    background-color: white;
+    border: 1px solid #ccc;
+    position: relative;
+    float: left;
+    padding: 0px 0px 0px 0px;
+    margin: 9px 0px 0px 0px;    
+    width: 440px;
+    height: 75px;
+}
+
+#eventos
+{
+    background-color: white;
+    border: 1px solid #ccc;
+    position: relative;
+    float: left;
+    padding: 0px 0px 0px 0px;
+    margin: 8px 0px 0px 0px;    
+    width: 140.3px;
+    height: 205px;
+}
+
+#grupos
+{
+    background-color: white;
+    border: 1px solid #ccc;
+    position: relative;
+    float: left;
+    padding: 0px 0px 0px 0px;
+    margin: 8px 0px 0px 9px;
+    width: 140.3px;
+    height: 205px;
+}
+
+#revistas
+{
+    background-color: white;
+    border: 1px solid #ccc;
+    position: relative;
+    float: left;
+    padding: 0px 0px 0px 0px;
+    margin: 8px 0px 0px 8px;        
+    width: 140.3px;
+    height: 205px;
+}
+
+#menu-titulo
+{
+    color: white;
+    font-size: 7.5pt;
+    font-weight: bold;
+    float: left;
+    position: relative;
+    top: 5px;
+    left: 4px;
+    margin-bottom: 4px;
+    width: auto;
+    height: auto;
+}
+
+#menu-conteudo-titulo
+{
+    float: left;
+    margin-top: 2px;
+    margin-left: 2px;
+    width: auto;
+    height: auto;
+}
+
+#menu-titulo-esq
+{
+    background-image: url("/skin/pro-reitorias/images/titulo-esq.gif");
+    background-repeat: no-repeat;
+    float: left;
+    width: 4px;
+    height: 20px;
+}
+
+#menu-titulo-centro
+{
+    background-image: url("/skin/pro-reitorias/images/titulo.gif");
+    background-repeat: repeat-x;
+    float: left;
+    width: 129px;
+    height: 20px;
+}
+
+#menu-titulo-dir
+{
+    background-image: url("/skin/pro-reitorias/images/titulo-dir.gif");
+    background-repeat: no-repeat;
+    float: left;
+    width: 6px;
+    height: 20px;
+}
+
+#menu-titulo2
+{
+    color: black;
+    font-size: 7.5pt;
+    font-weight: bold;
+    float: left;
+    position: relative;
+    top: 5px;
+    left: 5px;
+    margin-bottom: 3px;
+    width: auto;
+    height: auto;
+}
+
+#menu-titulo2-esq
+{
+    background-image: url("/skin/pro-reitorias/images/titulo2-esq.gif");
+    background-repeat: no-repeat;
+    float: left;
+    width: 5px;
+    height: 20px;
+}
+
+#menu-titulo2-centro
+{
+    background-image: url("/skin/pro-reitorias/images/titulo2.gif");
+    background-repeat: repeat-x;
+    float: left;
+    width: 129px;
+    height: 20px;
+}
+
+#menu-titulo2-dir
+{
+    background-image: url("/skin/pro-reitorias/images/titulo2-dir.gif");
+    background-repeat: no-repeat;
+    float: left;
+    width: 6px;
+    height: 20px;
+}
+
+#menu-titulo2 a
+{
+    color: black;
+    text-decoration: none;
+}
+
+#menu-titulo2 a:hover
+{
+    color: black;
+    text-decoration: none;
+}
+
+#menu-opcao
+{
+    background-color: #EBEAEA;
+    color: black;
+    font-size: 7.5pt;
+    font-weight: bold;
+    float: left;
+    padding: 0px 0px 0px 0px;
+    position: relative;
+    left: 5px;
+    margin-top: 2px;
+    width: auto;
+    height: auto;   
+}
+
+#menu-opcao a
+{
+    background-color: #EBEAEA;
+    color: black;
+    font-size: 7.5pt;
+    font-weight: bold;
+    float: left;
+    padding: 2px 1px 2px 1px;
+    margin: 0px 0px 0px 0px;
+    width: 135px;
+    height: auto;   
+    text-decoration: none;
+}
+
+#menu-opcao a:hover
+{
+    background-color: #6DAC6D;
+    color: white;
+    font-size: 7.5pt;
+    font-weight: bold;
+    float: left;
+    padding: 2px 1px 2px 1px;
+    margin: 0px 0px 0px 0px;
+    width: 135px;
+    height: auto;   
+    text-decoration: none;
+}
+
+#menu-opcao-2
+{
+    background-color: #EBEAEA;
+    color: #AD932C;
+    font-size: 7.5pt;
+    font-weight: bold;
+    float: left;
+    padding: 1px 1px 1px 1px;
+    position: relative;
+    left: 5px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    width: 127px;
+    text-align: left;
+    height: auto;   
+}
+
+#menu-opcao-2 a
+{
+    color: #AD932C;
+    text-decoration: none;
+}
+
+#menu-opcao-2 a:hover
+{
+    color: #AD932C;
+    text-decoration: none;
+}
+
+#menu-opcao-3
+{
+    background-color: white;
+    color: black;
+    font-size: 7pt;
+    float: left;
+    padding: 0px 0px 0px 0px;
+    position: relative;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    width: 135px;
+    height: auto;   
+}
+
+#menu-opcao-3 a
+{
+    color: black;
+    text-decoration: none;
+}
+
+#menu-opcao-3 a:hover
+{
+    color: black;
+    text-decoration: underline;
+}
+
+#conteudo-menu
+{
+    background-color: #EBEAEA;
+    color: black;
+    font-size: 6.5pt;
+    text-align: center;
+    float: left;
+    padding: 5px 0px 5px 0px;
+    position: relative;
+    margin-top: 5px;
+    left: 5px;
+    width: 135px;
+    height: auto;
+}
+
+#principal-titulo
+{
+    background-color: #EBEAEA;
+    position: relative;
+    float: left;
+    color: #AD932C;
+    font-size: 7.5pt;
+    font-weight: bold;
+    padding: 3px 0px 3px 0px;
+    margin: 4px 0px 0px 0px;
+    width: 100%;
+    height: auto;       
+}
+
+#lista-centro
+{
+    list-style-type:none;
+    padding: 0px 0px 0px 0px;
+    margin: 5px 5px 0px 5px;
+    color: #000000;
+    font-family: verdana, arial;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 17px;
+    text-align: justify;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#ul-listas
+{
+    list-style-type:none;
+    padding: 0px 0px 0px 0px;
+    margin: 5px 5px 0px 5px;
+}
+
+#li-listas
+{
+    padding: 0px 0px 0px 0px;
+    margin: 15px 5px 15px 15px;
+}
+
+#conteudo-principal
+{
+    color: black;
+    font-size: 7.5pt;
+    float: left;
+    position: relative;
+    padding: 10px 10px 0px 10px;
+}
+
+#conteudo
+{
+    background-color: white;
+    color: black;
+    float: left;
+    margin-left: 24px;
+    margin-top: 15px;
+    width: 582px;
+    height: 534px;  
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding-left:10px;
+    padding-right:5px;
+    padding-top:5px;
+}
+
+#conteudo2
+{
+    background-color: white;
+    color: black;
+    float: left;
+    position: relative;
+    left: 0px;
+    right: 0px;
+    width: auto;
+    height: auto;   
+}
+
+#conteudoCT
+{
+    background-color: white;
+    color: black;
+    float: left;
+    width: 588px;
+    height: auto;  
+    overflow: auto;
+    border: 1px solid #ccc;
+    margin:  10px 0px 0px 24px;
+    padding: 0px 0px 0px 0px;
+}
+
+#conteudo2CT
+{
+    background-color: white;
+    color: black;
+    float: left;
+    position: relative;
+    margin:  0px 0px 0px 0px;
+    padding: 5px 5px 150px 5px;
+    width: auto;
+    height: auto;   
+}
+
+#titulo
+{
+    background-color: white;    
+    color: green;
+    font-size: 9pt;
+    text-align: left;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    float: left;
+    margin-left: 24px;
+    margin-top: 15px;;
+    width: 592px;
+    height: auto;
+    border: 1px solid #ccc;
+}
+
+#titulo1
+{
+    background-color: #EBEAEA;
+    color: green;
+    font-size: 12pt;
+    font-weight: bold;
+    text-align: left;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 7px;
+    float: left;
+    margin-left: 24px;
+    margin-top: 15px;;
+    margin-right: 0px;;
+    width: 592px;
+    height: auto;
+    border: 1px solid #ccc;
+}
+
+#titulo2
+{
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    background-color: #EBEAEA;
+    color: #AD932C;
+    font-size: 9pt;
+    font-weight: bold;
+    float: left;
+    width: auto;
+    height:  auto;
+    border-top: 3px solid white;
+}
+
+#t2-texto{
+    margin-top: 8px;
+    margin-left: 8px;
+    margin-bottom: 8px;
+    float: left;
+}
+
+#t2-voltar{
+    margin-top: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    float: right;
+}
+
+#contato
+{
+    background-color: white;
+    color: black;
+    float: left;
+    margin-left: 24px;
+    margin-top: 5px;
+    width: 592px;
+    height: 65px;   
+}
+
+#conteudoSM
+{
+    background-color: white;
+    color: black;
+    float: left;
+    margin-left: 24px;
+    margin-top: 15px;
+    width: 753px;
+    height: 534px;  
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding-left:10px;
+    padding-right:5px;
+    padding-top:5px;
+}
+
+#conteudo2SM
+{
+    background-color: white;
+    color: black;
+    float: left;
+    position: relative;
+    left: 0px;
+    right: 0px;
+    width: auto;
+}
+
+#conteudoCTSM
+{
+    background-color: white;
+    color: black;
+    float: left;
+    width: 753px;
+    height: auto;  
+    border: 1px solid #ccc;
+    margin:  13px 0px 0px 13px;
+    padding: 0px 0px 0px 0px;
+    overflow-y: auto;
+}
+
+#titulo1SM
+{
+    background-color: #EBEAEA;
+    color: green;
+    font-size: 12pt;
+    font-weight: bold;
+    text-align: left;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 7px;
+    float: left;
+    margin-left: 12px;
+    margin-top: 15px;;
+    margin-right: 0px;;
+    width: 753px;
+    height: auto;
+    border: 1px solid #ccc;
+}
+
+a
+{
+    color: black;
+    text-decoration: none;
+}
+
+a:hover
+{
+    color: black;
+    text-decoration: underline;
+}
+
+.linkimagem
+{
+    border: 0px;
+    text-decoration: none;
+}
+
+.linkimagem img
+{
+    border: 0px;
+}
+
+img
+{
+    border: 0px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+.td_princ
+{
+  font-size : 11px;
+  font-family : verdana,arial,helvetica,sans-serif;
+  color : #000000;
+  text-align : justify;
+  line-height: 125%
+}
+
+  .textob {
+      font-style : normal;
+      font-family : verdana,arial,helvetica,sans-serif;
+      font-weight : bold; 
+      font-size : 11px;
+      color : #000000;  
+      text-decoration: none
+   }
+
+  .linkv {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 11px;
+      color : #3399FF;
+      text-decoration: none
+   }
+   
+  a.linkv:hover {
+         font-style : normal;
+         font-family : verdana, arial, helvetica, sans-serif;
+         font-size : 11px;
+         color : #3399FF;
+         text-decoration: none
+   }
+
+  .linkb {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 11px;
+      color : #004040;
+      font-weight    : bold;
+      text-decoration: none
+   }
+   
+  a.linkb:hover {
+         font-style : normal;
+         font-family : verdana, arial, helvetica, sans-serif;
+         font-size : 11px;
+         color : #3399FF;
+         font-weight    : bold;         
+         text-decoration: none
+   }
+
+  .linkbv {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 11px;
+      color : #3399FF;
+      font-weight    : bold;
+      text-decoration: none
+   }
+   
+  a.linkbv:hover {
+         font-style : normal;
+         font-family : verdana, arial, helvetica, sans-serif;
+         font-size : 11px;
+         color : #3399FF;
+         font-weight    : bold;
+         text-decoration: none
+   }
+
+
+  .linkg {
+      font-style     : normal;
+      font-family    : verdana, arial, helvetica, sans-serif;
+      font-size      : 12px;
+      color          : #006600;
+      font-weight    : bold;
+      text-decoration: none
+   }
+   
+  a.linkg:hover {
+         font-style : normal;
+         font-family : verdana, arial, helvetica, sans-serif;
+         font-size : 12px;
+         color : #003300;
+         font-weight : bold;
+         text-decoration: none
+   }
+   
+  .linkp {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 10px;
+      color : #000000;
+      text-decoration: none
+   }
+   
+  a.linkp:hover {
+         font-style : normal;
+         font-family : verdana, arial, helvetica, sans-serif;
+         font-size : 10px;
+         color : #3399FF;
+         text-decoration:  underline
+  }
+
+
+  a.ALista {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 10px;
+      color : #003300;
+      text-decoration: none
+   }
+   
+  a.ALista:link {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 10px;
+      color : #003300;
+      text-decoration: none
+   }
+
+  a.ALista:hover {
+         font-style : normal;
+         font-family : verdana, arial, helvetica, sans-serif;
+         font-size : 10px;
+         color : #003300;
+         text-decoration:  underline
+  }
+
+  a.ALista:active {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 10px;
+      color : #003300;
+      text-decoration: underline
+   }
+
+  a.AListaa {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 12px;
+      color : #003300;
+      text-decoration: none
+   }
+   
+  a.AListaa:link {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 12px;
+      color : #003300;
+      text-decoration: none
+   }
+
+  a.AListaa:hover {
+         font-style : normal;
+         font-family : verdana, arial, helvetica, sans-serif;
+         font-size : 12px;
+         color : #003300;
+         text-decoration:  underline
+  }
+
+  a.AListaa:active {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 12px;
+      color : #003300;
+      text-decoration: underline
+   }
+
+  #PLink{
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 10px;
+      color : #000000;
+      text-decoration: none
+   }
+
+  #GLink{
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 11px;
+      color : #004f4f;
+      text-decoration: none
+  }
+
+  a.PLink{
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 10px;
+      color : #000000;
+      text-decoration: none
+   }
+
+  a.PLink:link {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 10px;
+      color : #000000;
+      text-decoration: none
+   }
+
+  a.PLink:hover {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 10px;
+      color : #000000;
+      text-decoration:  underline
+  }
+
+  a.PLink:active {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 10px;
+      color : #000000;
+      text-decoration: underline
+  }
+
+  a.GLink{
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 11px;
+      color : #004f4f;
+      text-decoration: none
+   }
+
+  a.GLink:link {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 11px;
+      color : #004f4f;
+      text-decoration: none
+   }
+
+  a.GLink:hover {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 11px;
+      color : #004f4f;
+      text-decoration:  underline
+  }
+
+  a.GLink:active {
+      font-style : normal;
+      font-family : verdana, arial, helvetica, sans-serif;
+      font-size : 11px;
+      color : #004f4f;
+      text-decoration: underline
+  }
+
+th
+  {
+    color: #000000;
+    font-family: verdana, arial;
+    font-size: 13px;
+    line-height: 17px;
+    text-align: justify;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+caption
+  {
+    color: #000000;
+    font-family: verdana, arial;
+    font-size: 13px;
+    line-height: 17px;
+    text-align: justify;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-weight    : bold;         
+  }
+
+
+
+#textportal {
+font-family: verdana, tahoma, sans-serif;
+font-size:10px;
+background: #EEF2E6;
+font-weight : normal;
+text-decoration:none;
+}
+
+#inicial-titulo-marrom
+{
+    background-image: url("/skin/pro-reitorias/images/botao-marrom.gif");
+    background-repeat: no-repeat;
+    position: relative;
+    float: left;
+    color: white;
+    font-family: verdana, tahoma, sans-serif;
+    font-size: 7.5pt;
+    font-weight: bold;
+    padding: 2px 2px 2px 3px;
+    margin: 0px 0px 0px 2px;    
+    width: 15px;
+    height: auto;   
+}
+
+#inicial-titulo-verde
+{
+    background-image: url("/skin/pro-reitorias/images/botao-verde.gif");
+    background-repeat: no-repeat;
+    float: left;
+    position: relative;
+    color: white;
+    font-family: verdana, tahoma, sans-serif;
+    font-size: 9pt;
+    font-weight: bold;
+    padding: 1px 1px 1px 1px;
+    margin: 0px 0px 0px 0px;    
+    width: 15px;
+    height: auto;   
+}
+#separador-titulo
+{
+    color: white;
+    font-size: 7.5pt;
+    font-weight: bold;
+    float: none;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    margin-left: -5px;
+    margin-top: -3px;
+    margin-bottom: -5px;
+    margin-right: -5px;
+    width: auto;
+    height: auto;
+}
+
+#separador-titulo-esq
+{
+    background-image: url("/skin/pro-reitorias/images/titulo-esq.gif");
+    background-repeat: no-repeat;
+    -float: none;
+    width: 4px;
+    height: 18px;
+}
+
+#separador-titulo-centro {
+    background-image: url("/skin/pro-reitorias/images/titulo.gif");
+    background-repeat: repeat-x;
+    -float: left;
+    height: 20px;
+    margin-left: 4px;
+    margin-top: -18px;
+    -position: fixed;
+    width: 129px;
+}
+
+#separador-titulo-centro-nivelmaior
+{
+    background-image: url("/skin/pro-reitorias/images/titulo.gif");
+    background-repeat: repeat-x;
+    float: none;
+    width: 127px;
+    height: 20px;
+    margin-left: 4px;
+    margin-top: -18px;
+}
+
+#separador-conteudo-titulo
+{
+    float: left;
+    margin-top: 2px;
+    margin-left: 2px;
+    width: auto;
+    height: auto;
+}
+
+#separador-titulo-dir {
+    background-image: url("/skin/pro-reitorias/images/titulo-dir.gif");
+    background-repeat: no-repeat;
+    float: right;
+    height: 20px;
+    margin-right: 2px;
+    margin-top: -20px;
+    position: relative;
+    width: 6px;
+}
