@@ -5,9 +5,11 @@ import os
 import docker
 from rich.console import Console
 from template import *
+from labelfile import labels
 import re
 import time
 from packaging.version import parse as parse_version
+
 
 console = Console()
 
@@ -26,18 +28,21 @@ nginx_dir = baker_directory + '/nginx'
 def Inicializa():
     # Inicializa os diretórios
     os.makedirs(os.path.join(baker_directory, 'nginx'))
-    os.makedirs(os.path.join(baker_directory, 'nginx', 'location'))
-    os.makedirs(os.path.join(baker_directory, 'nginx', 'upstream'))
+    os.makedirs(os.path.join(baker_directory, 'nginx', 'sites-available'))
+    os.makedirs(os.path.join(baker_directory, 'nginx', 'sites-enabled'))
     os.chown(os.path.join(baker_directory, 'nginx'), 101, 101)
-    os.chown(os.path.join(baker_directory, 'nginx', 'location'), 101, 101)
-    os.chown(os.path.join(baker_directory, 'nginx', 'upstream'), 101, 101)
+    os.chown(os.path.join(baker_directory, 'nginx', 'sites-available'), 101, 101)
+    os.chown(os.path.join(baker_directory, 'nginx', 'sites-enabled'), 101, 101)
     os.makedirs(os.path.join(baker_directory, 'sites'))
     os.chown(os.path.join(baker_directory, 'sites'), 82, 82)
     console.print("Diretorios criados", style=st_success)
 
     # Cria a network principal
-    # docker_cli.networks.create(baker_network)
-    console.print("Network criada", style=st_success)
+    try:
+        docker_cli.networks.get(baker_network)
+    except:
+        docker_cli.networks.create(baker_network)
+        console.print("Network criada", style=st_success)
 
     # Builda as imagens
     console.print("Construindo imagens...", style='dim')
@@ -47,10 +52,24 @@ def Inicializa():
 
     console.print("Imagens criadas", style=st_success)
 
+
     # Cria conteiner principal nginx
-    os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml up -d")
-    console.print("Container principal nginx criado", style=st_success)
     shutil.copytree(src='./nginx-files/', dst=nginx_dir, dirs_exist_ok=True)
+
+    docker_cli.containers.run('nginx-baker', name='nginx-baker', detach=True
+                            , network=baker_network
+                            , volumes={"{}/nginx".format(baker_directory) : {"bind" : '/etc/nginx', "mode" : "rw"},
+                                       "{}/sites".format(baker_directory) : {"bind" : '/var/www', "mode" : "rw"}}
+                            , labels=labels
+                            )
+    console.print("Container principal nginx criado", style=st_success)
+    try:
+        docker_cli.containers.get('traefik')
+    except:
+        docker_cli.containers.run('traefik:v2.6', name='traefik', detach=True
+                            , ports={'80/tcp' : '80', '443/tcp' : '443'}
+                            , volumes={"/var/run/docker.sock" : {"bind" : "/var/run/docker.sock", "mode" : "rw"}}
+                            )
 
 
 
@@ -217,7 +236,6 @@ def atualizaSite(args):
         console.print("WebsiteBaker atualizado para a versão 2.13.0", style=st_success)
 
         
-
 
 
 parser = argparse.ArgumentParser(description='Migração sites baker para docker')
