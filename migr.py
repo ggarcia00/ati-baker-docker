@@ -75,9 +75,11 @@ def Inicializa():
         os.makedirs("/srv/docker/traefik")
         shutil.copytree(src="./traefik", dst="/srv/docker/traefik", dirs_exist_ok=True)
         docker_cli.containers.run('traefik:v2.6', name='traefik', detach=True
+                            , network=baker_network
                             , ports={'80/tcp' : '80', '443/tcp' : '443', '8080/tcp': '8080'}
                             , volumes={"/var/run/docker.sock" : {"bind" : "/var/run/docker.sock", "mode" : "rw"},
                                        "/srv/docker/traefik" : {"bind" : "/etc/traefik", "mode" : "rw"}}
+                            , restart_policy={"Name": "always"}
                             )
 
 
