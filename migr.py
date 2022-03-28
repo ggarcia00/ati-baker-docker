@@ -5,10 +5,11 @@ import os
 import docker
 from rich.console import Console
 from template import *
-from labelfile import labels
+import labelfile
 import re
 import time
 from packaging.version import parse as parse_version
+import importlib
 
 
 console = Console()
@@ -22,6 +23,8 @@ st_error = 'bold red'
 baker_network = 'baker-network'
 baker_directory = '/srv/docker/baker'
 nginx_dir = baker_directory + '/nginx'
+
+labels = labelfile.labels
 
 
 
@@ -61,14 +64,20 @@ def Inicializa():
                             , volumes={"{}/nginx".format(baker_directory) : {"bind" : '/etc/nginx', "mode" : "rw"},
                                        "{}/sites".format(baker_directory) : {"bind" : '/var/www', "mode" : "rw"}}
                             , labels=labels
+                            , restart_policy={"Name": "always"}
                             )
     console.print("Container principal nginx criado", style=st_success)
+
+
     try:
         docker_cli.containers.get('traefik')
     except:
+        os.makedirs("/srv/docker/traefik")
+        shutil.copytree(src="./traefik", dst="/srv/docker/traefik", dirs_exist_ok=True)
         docker_cli.containers.run('traefik:v2.6', name='traefik', detach=True
-                            , ports={'80/tcp' : '80', '443/tcp' : '443'}
-                            , volumes={"/var/run/docker.sock" : {"bind" : "/var/run/docker.sock", "mode" : "rw"}}
+                            , ports={'80/tcp' : '80', '443/tcp' : '443', '8080/tcp': '8080'}
+                            , volumes={"/var/run/docker.sock" : {"bind" : "/var/run/docker.sock", "mode" : "rw"},
+                                       "/srv/docker/traefik" : {"bind" : "/etc/traefik", "mode" : "rw"}}
                             )
 
 
@@ -153,15 +162,35 @@ def migrarSite(args):
                         restart_policy={"Name": "always"})
         
         exit_code, output = docker_cli.containers.get(slug).exec_run("php pre-atualiza.php", workdir='/var/www')
-        # console.print(output, style=st_error)
+        console.print(output.decode(), style=st_error)
         
     except docker.errors.APIError:
         console.print("Erro ao criar container", style=st_error)
     
+    os.system('sed -i \'s/}}/, "traefik.http.routers.{}.rule" : "Host(`{}`)"\\n\}}/\' labelfile.py'.format(slug, slug+".com"))
 
-    gerarLocationTemplateNginx(slug_arg=slug, path="{}/location/{}.conf".format(nginx_dir, slug))
-    gerarUpstreamTemplateNginx(slug_arg=slug, path="{}/upstream/{}.conf".format(nginx_dir, slug))
-    docker_cli.containers.get("nginx-baker").exec_run("nginx -s reload")
+    docker_cli.containers.get("nginx-baker").stop()
+    docker_cli.containers.get("nginx-baker").remove()
+
+    gerarTemplateNginx(slug_arg=slug, path="{}/sites-available/{}.conf".format(nginx_dir, slug), server_name_arg="proppg.com")
+
+    os.symlink(src="/etc/nginx/sites-available/{}.conf".format(slug), dst="{}/sites-enabled/{}.conf".format(nginx_dir, slug))
+
+    importlib.reload(labelfile)
+    labels = labelfile.labels
+
+    docker_cli.containers.run('nginx-baker', name='nginx-baker', detach=True
+                            , network=baker_network
+                            , volumes={"{}/nginx".format(baker_directory) : {"bind" : '/etc/nginx', "mode" : "rw"},
+                                       "{}/sites".format(baker_directory) : {"bind" : '/var/www', "mode" : "rw"}}
+                            , labels=labels
+                            , restart_policy={"Name": "always"}
+                            )
+    console.print("Container principal nginx recriado", style=st_success)
+
+    # gerarLocationTemplateNginx(slug_arg=slug, path="{}/location/{}.conf".format(nginx_dir, slug))
+    # gerarUpstreamTemplateNginx(slug_arg=slug, path="{}/upstream/{}.conf".format(nginx_dir, slug))
+    # docker_cli.containers.get("nginx-baker").exec_run("nginx -s reload")
 
 
 
@@ -263,4 +292,3 @@ if (args.cmd == 'migrate'):
 
 if (args.cmd == 'upgrade'):
     atualizaSite(args)
-

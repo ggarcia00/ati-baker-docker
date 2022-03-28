@@ -1,25 +1,14 @@
 from jinja2 import Template
 
-def gerarLocationTemplateNginx(slug_arg, path):
-    with open("./template-nginx/location_template.nginx", "r") as file:
-        arquivoTemplate = file.read()
-        template = Template(arquivoTemplate)
-        
-        templateProcessado = template.render(
-            slug = slug_arg
-        )
 
-        arquivoTemplate = open(path, "w")
-        arquivoTemplate.write(templateProcessado)
-
-
-def gerarUpstreamTemplateNginx(slug_arg, path):
-    with open("./template-nginx/upstream_template.nginx", "r") as file:
+def gerarTemplateNginx(slug_arg, path, server_name_arg):
+    with open("./template-nginx/template.conf", "r") as file:
         arquivoTemplate = file.read()
         template = Template(arquivoTemplate)
 
         templateProcessado = template.render(
-            slug = slug_arg
+            slug = slug_arg,
+            server_name = server_name_arg
         )
 
         arquivoTemplate = open(path, "w")
