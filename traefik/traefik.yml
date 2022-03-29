@@ -9,7 +9,7 @@ api:
   # Optional
   # Default: false
   
-  insecure: true
+  insecure: false
 dashboard:
   # Enabled Dashboard
   
