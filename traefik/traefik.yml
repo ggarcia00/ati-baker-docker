@@ -16,4 +16,4 @@ dashboard:
   # Optional
   # Default: true
   
-  dashboard: true
+  # dashboard: true
