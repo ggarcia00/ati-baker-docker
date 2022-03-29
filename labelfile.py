@@ -1,0 +1,2 @@
+labels={ "traefik.enable" : "true" 
+}

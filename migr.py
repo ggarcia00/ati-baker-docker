@@ -5,9 +5,12 @@ import os
 import docker
 from rich.console import Console
 from template import *
+import labelfile
 import re
 import time
 from packaging.version import parse as parse_version
+import importlib
+
 
 console = Console()
 
@@ -21,81 +24,66 @@ baker_network = 'baker-network'
 baker_directory = '/srv/docker/baker'
 nginx_dir = baker_directory + '/nginx'
 
+labels = labelfile.labels
+
 
 
 def Inicializa():
     # Inicializa os diretórios
     os.makedirs(os.path.join(baker_directory, 'nginx'))
-    os.makedirs(os.path.join(baker_directory, 'nginx', 'location'))
-    os.makedirs(os.path.join(baker_directory, 'nginx', 'upstream'))
+    os.makedirs(os.path.join(baker_directory, 'nginx', 'sites-available'))
+    os.makedirs(os.path.join(baker_directory, 'nginx', 'sites-enabled'))
     os.chown(os.path.join(baker_directory, 'nginx'), 101, 101)
-    os.chown(os.path.join(baker_directory, 'nginx', 'location'), 101, 101)
-    os.chown(os.path.join(baker_directory, 'nginx', 'upstream'), 101, 101)
+    os.chown(os.path.join(baker_directory, 'nginx', 'sites-available'), 101, 101)
+    os.chown(os.path.join(baker_directory, 'nginx', 'sites-enabled'), 101, 101)
     os.makedirs(os.path.join(baker_directory, 'sites'))
     os.chown(os.path.join(baker_directory, 'sites'), 82, 82)
     console.print("Diretorios criados", style=st_success)
 
     # Cria a network principal
-    docker_cli.networks.create(baker_network)
-    console.print("Network criada", style=st_success)
+    try:
+        docker_cli.networks.get(baker_network)
+    except:
+        docker_cli.networks.create(baker_network)
+        console.print("Network criada", style=st_success)
 
     # Builda as imagens
-    console.print("Construindo imagens...", style='dim')
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.8.x', target="php56")
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.13.0', target="php81")
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='nginx-baker', target="nginx-baker")
 
     console.print("Imagens criadas", style=st_success)
 
+
     # Cria conteiner principal nginx
-    os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml up -d")
-    console.print("Container principal nginx criado", style=st_success)
     shutil.copytree(src='./nginx-files/', dst=nginx_dir, dirs_exist_ok=True)
 
+    docker_cli.containers.run('nginx-baker', name='nginx-baker', detach=True
+                            , network=baker_network
+                            , volumes={"{}/nginx".format(baker_directory) : {"bind" : '/etc/nginx', "mode" : "rw"},
+                                       "{}/sites".format(baker_directory) : {"bind" : '/var/www', "mode" : "rw"}}
+                            , labels=labels
+                            , restart_policy={"Name": "always"}
+                            )
+    console.print("Container principal nginx criado", style=st_success)
 
+    try:
+        traefik_container = docker_cli.containers.get('traefik')
+        docker_cli.networks.get(baker_network).connect(traefik_container)
+        console.print("Adicionado container Traefik ja existente à network" + baker_network, style=st_success)
+        
+    except:
+        os.makedirs("/srv/docker/traefik")
+        shutil.copytree(src="./traefik", dst="/srv/docker/traefik", dirs_exist_ok=True)
+        docker_cli.containers.run('traefik:v2.6', name='traefik', detach=True
+                            , network=baker_network
+                            , ports={'80/tcp' : '80', '443/tcp' : '443', '8080/tcp': '8080'}
+                            , volumes={"/var/run/docker.sock" : {"bind" : "/var/run/docker.sock", "mode" : "rw"},
+                                       "/srv/docker/traefik" : {"bind" : "/etc/traefik", "mode" : "rw"}}
+                            , restart_policy={"Name": "always"}
+                            )
+        console.print("Container Traefik criado", style=st_success)
 
-
-
-# def RemoverTudo():
-#     #Remove arquivos
-#     # CUIDADO! IRÁ REMOVER OUTROS CONTAINERS ALEM DOS USADOS
-#     try:
-#         shutil.rmtree(baker_directory)
-#         console.print("Arquivos removidos", style=st_error)
-#     except:
-#         pass
-#     try:
-#         #Remove conteiner principal nginx
-#         os.system(f"docker-compose -f ./conteiners/nginx/docker-compose.yml down -v")
-#         console.print("Conteiner principal nginx removido", style=st_error)
-#     except:
-#         pass
-
-#     try:
-#         #Remove container site
-#         containers = docker_cli.containers.list()
-#         for c in containers:
-#             if c.name != 'teste-db_db_1':
-#                 c.remove(force=True)
-#         console.print("Containers removidos", style=st_error)
-
-#     except:
-#         pass
-
-#     try:
-#         #Remove network
-#         docker_cli.networks.get(baker_network).remove()
-#         console.print("Network removida", style=st_error)
-#     except:
-#         pass
-#     try:
-#         #Remove imagens
-#         docker_cli.images.remove("baker:2.8.x")
-#         docker_cli.images.remove("baker:2.13.0")
-#         docker_cli.images.remove("nginx-baker")
-#         console.print("Imagens removidas", style=st_error)
-#     except:
-#         pass
 
 
 
@@ -112,6 +100,13 @@ def migrarSite(args):
     else:
         console.print("Insira o diretorio atual do site (--dir)", style=st_error)
         exit()
+    
+    if( args.server_name is None ):
+        console.print("Use o parâmetro --server-name", style=st_error)
+        exit()
+    else:
+        server_name = args.server_name
+
 
 
 
@@ -133,16 +128,33 @@ def migrarSite(args):
                         network='baker-network', volumes={"{}/sites/{}".format(baker_directory, slug) : {'bind' : '/var/www' , 'mode' : 'rw'}},
                         restart_policy={"Name": "always"})
         
-        exit_code, output = docker_cli.containers.get(slug).exec_run("php pre-atualiza.php", workdir='/var/www')
-        # console.print(output, style=st_error)
+        _, output = docker_cli.containers.get(slug).exec_run("php pre-atualiza.php", workdir='/var/www')
+        console.print(output.decode(), style=st_error)
         
     except docker.errors.APIError:
         console.print("Erro ao criar container", style=st_error)
     
+    os.system('sed -i \'s/}}/, "traefik.http.routers.{}.rule" : "Host(`{}`)"\\n\}}/\' labelfile.py'.format(slug, server_name))
 
-    gerarLocationTemplateNginx(slug_arg=slug, path="{}/location/{}.conf".format(nginx_dir, slug))
-    gerarUpstreamTemplateNginx(slug_arg=slug, path="{}/upstream/{}.conf".format(nginx_dir, slug))
-    docker_cli.containers.get("nginx-baker").exec_run("nginx -s reload")
+    docker_cli.containers.get("nginx-baker").stop()
+    docker_cli.containers.get("nginx-baker").remove()
+
+    gerarTemplateNginx(slug_arg=slug, path="{}/sites-available/{}.conf".format(nginx_dir, slug), server_name_arg=server_name)
+
+    os.symlink(src="/etc/nginx/sites-available/{}.conf".format(slug), dst="{}/sites-enabled/{}.conf".format(nginx_dir, slug))
+
+    importlib.reload(labelfile)
+    labels = labelfile.labels
+
+    docker_cli.containers.run('nginx-baker', name='nginx-baker', detach=True
+                            , network=baker_network
+                            , volumes={"{}/nginx".format(baker_directory) : {"bind" : '/etc/nginx', "mode" : "rw"},
+                                       "{}/sites".format(baker_directory) : {"bind" : '/var/www', "mode" : "rw"}}
+                            , labels=labels
+                            , restart_policy={"Name": "always"}
+                            )
+    console.print("Site {} migrado com sucesso.".format(server_name), style=st_success)
+
 
 
 
@@ -219,12 +231,12 @@ def atualizaSite(args):
         
 
 
-
 parser = argparse.ArgumentParser(description='Migração sites baker para docker')
 parser.add_argument("cmd", type=str, help="Comando a ser executado")
-parser.add_argument("--dir", type=pathlib.Path, help="Diretório onde os arquivos do site estão atualmente")
+parser.add_argument("--dir", type=pathlib.Path, help="Diretório onde os arquivos do site estão atualmente (Nome da pasta será o nome do container)")
 parser.add_argument("--slug", type=str, help="slug do site para remoção com o comando remove")
 parser.add_argument("--upgrade-to", type=str, help="Versão alvo da atualização: \"2.8.3\" ou \"2.13.0\"")
+parser.add_argument("--server-name", type=str, help="Link do site")
 args = parser.parse_args()
 
 
@@ -245,4 +257,3 @@ if (args.cmd == 'migrate'):
 
 if (args.cmd == 'upgrade'):
     atualizaSite(args)
-
