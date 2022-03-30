@@ -77,8 +77,8 @@ def Inicializa():
         shutil.copytree(src="./traefik", dst="/srv/docker/traefik", dirs_exist_ok=True)
         docker_cli.containers.run('traefik:v2.6', name='traefik', detach=True
                             , network=baker_network
-                            , ports={'80/tcp' : '80', '443/tcp' : '443', '8080/tcp': '8080'}
-                            , volumes={"/var/run/docker.sock" : {"bind" : "/var/run/docker.sock", "mode" : "rw"},
+                            , ports={'80/tcp' : '80', '443/tcp' : '443'}
+                            , volumes={"/var/run/docker.sock" : {"bind" : "/var/run/docker.sock", "mode" : "ro"},
                                        "/srv/docker/traefik" : {"bind" : "/etc/traefik", "mode" : "rw"}}
                             , restart_policy={"Name": "always"}
                             )
@@ -100,12 +100,6 @@ def migrarSite(args):
     else:
         console.print("Insira o diretorio atual do site (--dir)", style=st_error)
         exit()
-    
-    if( args.server_name is None ):
-        console.print("Use o parâmetro --server-name", style=st_error)
-        exit()
-    else:
-        server_name = args.server_name
 
 
 
@@ -133,6 +127,8 @@ def migrarSite(args):
         
     except docker.errors.APIError:
         console.print("Erro ao criar container", style=st_error)
+
+    server_name = buscaUrl(os.path.join(baker_directory, "sites", slug))
     
     os.system('sed -i \'s/}}/, "traefik.http.routers.{}.rule" : "Host(`{}`)"\\n\}}/\' labelfile.py'.format(slug, server_name))
 
@@ -162,14 +158,27 @@ def migrarSite(args):
 def buscaVersao(dir):
     if(os.path.exists(os.path.join(dir, 'admin/interface/version.json'))):
         pattern = re.compile('VERSION":"(.*)","REVISION')
-        file = open(os.path.join(dir, 'admin/interface/version.json'))
+        filepath = os.path.join(dir, 'admin/interface/version.json')
     else:
         pattern = re.compile('VERSION\', \'(.*)\'\);')
-        file = open(os.path.join(dir, 'admin/interface/version.php'), "r")
-    for line in file:
-        match = pattern.search(line)
-        if match:
-            return match.group(1)
+        filepath = os.path.join(dir, 'admin/interface/version.php')
+    
+    with open(filepath, "r") as file:
+        for line in file:
+            match = pattern.search(line)
+            if match:
+                return match.group(1)
+    return None
+
+def buscaUrl(dir):
+    filepath = os.path.join(dir, "config.php")
+    if(os.path.exists(filepath)):
+        pattern = re.compile('\'http://(.*)\'')
+        with open(filepath, "r") as file:
+            for line in file:
+                match = pattern.search(line)
+                if match:
+                    return match.group(1)
     return None
     
 
@@ -236,7 +245,6 @@ parser.add_argument("cmd", type=str, help="Comando a ser executado")
 parser.add_argument("--dir", type=pathlib.Path, help="Diretório onde os arquivos do site estão atualmente (Nome da pasta será o nome do container)")
 parser.add_argument("--slug", type=str, help="slug do site para remoção com o comando remove")
 parser.add_argument("--upgrade-to", type=str, help="Versão alvo da atualização: \"2.8.3\" ou \"2.13.0\"")
-parser.add_argument("--server-name", type=str, help="Link do site")
 args = parser.parse_args()
 
 
@@ -248,9 +256,6 @@ except docker.errors.DockerException:
 
 if (args.cmd == 'init'):
     Inicializa()
-
-# if (args.cmd == 'explode'):
-#     RemoverTudo()
 
 if (args.cmd == 'migrate'):
     migrarSite(args)
