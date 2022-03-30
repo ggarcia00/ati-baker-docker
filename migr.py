@@ -1,15 +1,14 @@
 import argparse
+from ntpath import join
 import pathlib
 import shutil
 import os
 import docker
 from rich.console import Console
 from template import *
-import labelfile
 import re
 import time
 from packaging.version import parse as parse_version
-import importlib
 
 
 console = Console()
@@ -24,18 +23,13 @@ baker_network = 'baker-network'
 baker_directory = '/srv/docker/baker'
 nginx_dir = baker_directory + '/nginx'
 
-labels = labelfile.labels
 
 
 
 def Inicializa():
     # Inicializa os diretórios
     os.makedirs(os.path.join(baker_directory, 'nginx'))
-    os.makedirs(os.path.join(baker_directory, 'nginx', 'sites-available'))
-    os.makedirs(os.path.join(baker_directory, 'nginx', 'sites-enabled'))
     os.chown(os.path.join(baker_directory, 'nginx'), 101, 101)
-    os.chown(os.path.join(baker_directory, 'nginx', 'sites-available'), 101, 101)
-    os.chown(os.path.join(baker_directory, 'nginx', 'sites-enabled'), 101, 101)
     os.makedirs(os.path.join(baker_directory, 'sites'))
     os.chown(os.path.join(baker_directory, 'sites'), 82, 82)
     console.print("Diretorios criados", style=st_success)
@@ -54,18 +48,6 @@ def Inicializa():
 
     console.print("Imagens criadas", style=st_success)
 
-
-    # Cria conteiner principal nginx
-    shutil.copytree(src='./nginx-files/', dst=nginx_dir, dirs_exist_ok=True)
-
-    docker_cli.containers.run('nginx-baker', name='nginx-baker', detach=True
-                            , network=baker_network
-                            , volumes={"{}/nginx".format(baker_directory) : {"bind" : '/etc/nginx', "mode" : "rw"},
-                                       "{}/sites".format(baker_directory) : {"bind" : '/var/www', "mode" : "rw"}}
-                            , labels=labels
-                            , restart_policy={"Name": "always"}
-                            )
-    console.print("Container principal nginx criado", style=st_success)
 
     try:
         traefik_container = docker_cli.containers.get('traefik')
@@ -116,6 +98,31 @@ def migrarSite(args):
         console.print("{} já existe".format(baker_directory + "/sites/" + slug), style=st_error)
         exit()
 
+    os.makedirs(os.path.join(nginx_dir, slug))
+    shutil.copytree(src="./nginx-files/", dst=os.path.join(nginx_dir, slug), dirs_exist_ok=True)
+    os.mkdir(os.path.join(nginx_dir, slug, "conf.d"))
+    os.system("chown -R 82.82 {}/{}".format(nginx_dir, slug))
+
+    gerarTemplateNginx(slug_arg=slug, path=os.path.join(nginx_dir, slug, "conf.d", "main.conf"))
+
+
+    server_name = buscaUrl(os.path.join(baker_directory, "sites", slug))
+
+
+
+    try:
+        docker_cli.containers.run('nginx-baker', detach=True, name="nginx-baker-{}".format(slug),
+                            network='baker-network', volumes={os.path.join(nginx_dir, slug) : {'bind' : '/etc/nginx', 'mode' : 'rw'}
+                                                            , os.path.join(baker_directory, '/sites/', slug) : {'bind': '/var/www', 'mode' : 'rw'}},
+                            labels={"traefik.enable" : "true", "traefik.http.routers.{}.rule".format(slug) : "Host(`{}`)".format(server_name)},
+                            restart_policy={"Name" : "always"}
+        
+        )
+    except docker.errors.APIError:
+        console.print("Erro ao criar container", style=st_error)
+        exit(1)
+
+
     
     try:
         docker_cli.containers.run('baker:2.8.x' , detach=True, name=slug, 
@@ -127,28 +134,9 @@ def migrarSite(args):
         
     except docker.errors.APIError:
         console.print("Erro ao criar container", style=st_error)
+        exit(1)
 
-    server_name = buscaUrl(os.path.join(baker_directory, "sites", slug))
-    
-    os.system('sed -i \'s/}}/, "traefik.http.routers.{}.rule" : "Host(`{}`)"\\n\}}/\' labelfile.py'.format(slug, server_name))
 
-    docker_cli.containers.get("nginx-baker").stop()
-    docker_cli.containers.get("nginx-baker").remove()
-
-    gerarTemplateNginx(slug_arg=slug, path="{}/sites-available/{}.conf".format(nginx_dir, slug), server_name_arg=server_name)
-
-    os.symlink(src="/etc/nginx/sites-available/{}.conf".format(slug), dst="{}/sites-enabled/{}.conf".format(nginx_dir, slug))
-
-    importlib.reload(labelfile)
-    labels = labelfile.labels
-
-    docker_cli.containers.run('nginx-baker', name='nginx-baker', detach=True
-                            , network=baker_network
-                            , volumes={"{}/nginx".format(baker_directory) : {"bind" : '/etc/nginx', "mode" : "rw"},
-                                       "{}/sites".format(baker_directory) : {"bind" : '/var/www', "mode" : "rw"}}
-                            , labels=labels
-                            , restart_policy={"Name": "always"}
-                            )
     console.print("Site {} migrado com sucesso.".format(server_name), style=st_success)
 
 
