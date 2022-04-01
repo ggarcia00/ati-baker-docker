@@ -29,7 +29,7 @@ nginx_dir = baker_directory + '/nginx'
 def Inicializa():
     # Inicializa os diretórios
     os.makedirs(os.path.join(baker_directory, 'nginx'))
-    os.chown(os.path.join(baker_directory, 'nginx'), 101, 101)
+    os.chown(os.path.join(baker_directory, 'nginx'), 82, 82)
     os.makedirs(os.path.join(baker_directory, 'sites'))
     os.chown(os.path.join(baker_directory, 'sites'), 82, 82)
     console.print("Diretorios criados", style=st_success)
@@ -103,18 +103,27 @@ def migrarSite(args):
     os.mkdir(os.path.join(nginx_dir, slug, "conf.d"))
     os.system("chown -R 82.82 {}/{}".format(nginx_dir, slug))
 
-    gerarTemplateNginx(slug_arg=slug, path=os.path.join(nginx_dir, slug, "conf.d", "main.conf"))
+    server_name, server_uri = buscaUrl(os.path.join(baker_directory, "sites", slug))
+    if(server_uri is not None):
+        path_rule =  ' && PathPrefix(`/{}`)'.format(server_uri)
+        rewrite_str = 'rewrite /{}/?(.*)$ /$1 break;'.format(server_uri)
+    else:
+        rewrite_str = ""
+        path_rule = ""
+        server_uri = ""
+
+    gerarTemplateNginx(slug_arg=slug, rewrite_arg=rewrite_str, path=os.path.join(nginx_dir, slug, "conf.d", "main.conf"))
 
 
-    server_name = buscaUrl(os.path.join(baker_directory, "sites", slug))
 
 
 
     try:
         docker_cli.containers.run('nginx-baker', detach=True, name="nginx-baker-{}".format(slug),
                             network='baker-network', volumes={os.path.join(nginx_dir, slug) : {'bind' : '/etc/nginx', 'mode' : 'rw'}
-                                                            , os.path.join(baker_directory, '/sites/', slug) : {'bind': '/var/www', 'mode' : 'rw'}},
-                            labels={"traefik.enable" : "true", "traefik.http.routers.{}.rule".format(slug) : "Host(`{}`)".format(server_name)},
+                                                            , os.path.join(baker_directory, 'sites', slug) : {'bind': '/var/www', 'mode' : 'rw'}},
+                            labels={"traefik.enable" : "true", "traefik.http.routers.{}.rule".format(slug) : "Host(`{}`){}".format(server_name, path_rule),
+                                    },
                             restart_policy={"Name" : "always"}
         
         )
@@ -137,7 +146,7 @@ def migrarSite(args):
         exit(1)
 
 
-    console.print("Site {} migrado com sucesso.".format(server_name), style=st_success)
+    console.print("Site {}/{} migrado com sucesso.".format(server_name, server_uri), style=st_success)
 
 
 
@@ -166,7 +175,12 @@ def buscaUrl(dir):
             for line in file:
                 match = pattern.search(line)
                 if match:
-                    return match.group(1)
+                    server_uri = None
+                    try:
+                        server_name, server_uri = match.group(1).split('/')
+                    except:
+                        server_name = match.group(1)
+                    return server_name, server_uri
     return None
     
 
