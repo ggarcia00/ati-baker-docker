@@ -2,18 +2,3 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-
-api:
-  # Enable the API in insecure mode
-  
-  # Optional
-  # Default: false
-  
-  insecure: false
-dashboard:
-  # Enabled Dashboard
-  
-  # Optional
-  # Default: true
-  
-  # dashboard: true
