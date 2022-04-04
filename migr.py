@@ -102,6 +102,8 @@ def migrarSite(args):
     shutil.copytree(src="./nginx-files/", dst=os.path.join(nginx_dir, slug), dirs_exist_ok=True)
     os.mkdir(os.path.join(nginx_dir, slug, "conf.d"))
     os.system("chown -R 82.82 {}/{}".format(nginx_dir, slug))
+    os.system("find {} -type d -print0 | xargs -0 chmod 755".format(os.path.join(baker_directory, 'sites', slug)))
+    os.system("find {} -type f -print0 | xargs -0 chmod 644".format(os.path.join(baker_directory, 'sites', slug)))
 
     server_name, server_uri = buscaUrl(os.path.join(baker_directory, "sites", slug))
     if(server_uri is not None):
@@ -119,7 +121,7 @@ def migrarSite(args):
 
 
     try:
-        docker_cli.containers.run('nginx-baker', detach=True, name="nginx-baker-{}".format(slug),
+        docker_cli.containers.run('nginx:1.21.6-alpine', detach=True, name="nginx-baker-{}".format(slug),
                             network='baker-network', volumes={os.path.join(nginx_dir, slug) : {'bind' : '/etc/nginx', 'mode' : 'rw'}
                                                             , os.path.join(baker_directory, 'sites', slug) : {'bind': '/var/www', 'mode' : 'rw'}},
                             labels={"traefik.enable" : "true", "traefik.http.routers.{}.rule".format(slug) : "Host(`{}`){}".format(server_name, path_rule),
@@ -203,11 +205,14 @@ def atualizaSite(args):
                     , "/modules/backup", "/modules/droplets/js", "/templates/argos_theme", "/templates/classic_theme", "/templates/wb_theme"
                     , "/config.php.new", "/install", "/config.php.new"]
 
-        shutil.copytree("./cms-baker/2.8.3/", site_dir, dirs_exist_ok=True)
-        os.system("chown -R 82.82 " + site_dir)
-
         for dir in removedirs:
             shutil.rmtree(site_dir + dir, ignore_errors=True)
+            
+        shutil.copytree("./cms-baker/2.8.3/", site_dir, dirs_exist_ok=True)
+        os.system("chown -R 82.82 " + site_dir)
+        os.system("find {} -type d -print0 | xargs -0 chmod 755".format(site_dir))
+        os.system("find {} -type f -print0 | xargs -0 chmod 644".format(site_dir))
+
 
 
         docker_cli.containers.get(slug).exec_run("php upgrade-script.php")
