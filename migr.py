@@ -44,7 +44,6 @@ def Inicializa():
     # Builda as imagens
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.8.x', target="php56")
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.13.0', target="php81")
-    docker_cli.images.build(path="./images/php-baker", rm=True, tag='nginx-baker', target="nginx-baker")
 
     console.print("Imagens criadas", style=st_success)
 
