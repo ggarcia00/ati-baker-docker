@@ -86,32 +86,41 @@ def migrarSite(args):
 
 
     slug = os.path.basename(args.dir)
+    server_name, server_uri = buscaUrl(args.dir)
+
+    if(server_uri is not None):
+        nginx_vol = '/var/www/{}/'.format(server_uri)
+        path_rule =  ' && PathPrefix(`/{}`)'.format(server_uri)
+        rewrite_str = 'rewrite /{}/?(.*)$ /$1 break;'.format(server_uri)
+    else:
+        nginx_vol = '/var/www'
+        rewrite_str = ""
+        path_rule = ""
+        server_uri = ""
+
+    novo_site_dir = os.path.join(baker_directory, 'sites', server_name, server_uri)
+
     try:
         #copia arquivos do site
-        shutil.copytree(src=args.dir, dst="{}/sites/{}".format(baker_directory, slug), ignore_dangling_symlinks=True, symlinks=True )
+        os.makedirs(novo_site_dir)
+
+        shutil.copytree(src=args.dir, dst=novo_site_dir, ignore_dangling_symlinks=True, symlinks=True, dirs_exist_ok=True )
         #copia os arquivos novos (template, modulo separador)
-        shutil.copytree(src="./template-baker/", dst="{}/sites/{}".format(baker_directory, slug), dirs_exist_ok=True)
-        os.system("chown -R 82.82 " + baker_directory + '/sites/' + slug)
+        shutil.copytree(src="./template-baker/", dst=novo_site_dir, dirs_exist_ok=True)
+        os.system("chown -R 82.82 " + novo_site_dir)
 
     except FileExistsError:
-        console.print("{} já existe".format(baker_directory + "/sites/" + slug), style=st_error)
+        console.print("{} já existe".format(novo_site_dir), style=st_error)
         exit()
 
     os.makedirs(os.path.join(nginx_dir, slug))
     shutil.copytree(src="./nginx-files/", dst=os.path.join(nginx_dir, slug), dirs_exist_ok=True)
     os.mkdir(os.path.join(nginx_dir, slug, "conf.d"))
     os.system("chown -R 82.82 {}/{}".format(nginx_dir, slug))
-    os.system("find {} -type d -print0 | xargs -0 chmod 755".format(os.path.join(baker_directory, 'sites', slug)))
-    os.system("find {} -type f -print0 | xargs -0 chmod 644".format(os.path.join(baker_directory, 'sites', slug)))
+    os.system("find {} -type d -print0 | xargs -0 chmod 755".format(novo_site_dir))
+    os.system("find {} -type f -print0 | xargs -0 chmod 644".format(novo_site_dir))
 
-    server_name, server_uri = buscaUrl(os.path.join(baker_directory, "sites", slug))
-    if(server_uri is not None):
-        path_rule =  ' && PathPrefix(`/{}`)'.format(server_uri)
-        rewrite_str = 'rewrite /{}/?(.*)$ /$1 break;'.format(server_uri)
-    else:
-        rewrite_str = ""
-        path_rule = ""
-        server_uri = ""
+    
 
     gerarTemplateNginx(slug_arg=slug, rewrite_arg=rewrite_str, path=os.path.join(nginx_dir, slug, "conf.d", "main.conf"))
 
@@ -122,7 +131,7 @@ def migrarSite(args):
     try:
         docker_cli.containers.run('nginx:1.21.6-alpine', detach=True, name="nginx-baker-{}".format(slug),
                             network='baker-network', volumes={os.path.join(nginx_dir, slug) : {'bind' : '/etc/nginx', 'mode' : 'rw'}
-                                                            , os.path.join(baker_directory, 'sites', slug) : {'bind': '/var/www', 'mode' : 'rw'}},
+                                                            , novo_site_dir : {'bind': nginx_vol, 'mode' : 'rw'}},
                             labels={"traefik.enable" : "true", "traefik.http.routers.{}.rule".format(slug) : "Host(`{}`){}".format(server_name, path_rule),
                                     },
                             restart_policy={"Name" : "always"}
@@ -136,10 +145,10 @@ def migrarSite(args):
     
     try:
         docker_cli.containers.run('baker:2.8.x' , detach=True, name=slug, 
-                        network='baker-network', volumes={"{}/sites/{}".format(baker_directory, slug) : {'bind' : '/var/www' , 'mode' : 'rw'}},
+                        network='baker-network', volumes={novo_site_dir : {'bind' : nginx_vol , 'mode' : 'rw'}},
                         restart_policy={"Name": "always"})
         
-        _, output = docker_cli.containers.get(slug).exec_run("php pre-atualiza.php", workdir='/var/www')
+        _, output = docker_cli.containers.get(slug).exec_run("php pre-atualiza.php", workdir=nginx_vol)
         console.print(output.decode(), style=st_error)
         
     except docker.errors.APIError:
@@ -196,7 +205,7 @@ def atualizaSite(args):
         console.print("Especificar parametro --upgrade-to para versão", style=st_error)
         exit()
 
-    site_dir = os.path.join(baker_directory, "sites", slug)
+    site_dir = os.path.join(baker_directory, "sites", "teste.com", slug)
     versao = buscaVersao(site_dir)
     if (parse_version(versao) == parse_version("2.8.1") and parse_version(args.upgrade_to) >= parse_version("2.8.3")): # Atualiza pra 2.8.3
 
@@ -214,7 +223,7 @@ def atualizaSite(args):
 
 
 
-        docker_cli.containers.get(slug).exec_run("php upgrade-script.php")
+        docker_cli.containers.get(slug).exec_run("php treinamentoesportivo/upgrade-script.php")
         os.remove(site_dir + '/upgrade-script.php')
         os.remove(site_dir + '/config.php.new')
 
