@@ -3,6 +3,7 @@ from ntpath import join
 import pathlib
 import shutil
 import os
+import sys
 import docker
 from rich.console import Console
 from template import *
@@ -21,20 +22,22 @@ st_error = 'bold red'
 #Variaveis
 baker_network = 'baker-network'
 baker_directory = '/srv/docker/baker'
-nginx_dir = baker_directory + '/nginx'
+
+nginx_directory = baker_directory + '/nginx'
+sites_directory = baker_directory + '/sites'
 
 
 
 
 def Inicializa():
     # Inicializa os diretórios
-    os.makedirs(os.path.join(baker_directory, 'nginx'))
-    os.chown(os.path.join(baker_directory, 'nginx'), 82, 82)
-    os.makedirs(os.path.join(baker_directory, 'sites'))
-    os.chown(os.path.join(baker_directory, 'sites'), 82, 82)
-    console.print("Diretorios criados", style=st_success)
+    os.makedirs(nginx_directory, exist_ok=True)
+    os.chown(nginx_directory, 82, 82)
+    os.makedirs(sites_directory, exist_ok=True)
+    os.chown(sites_directory, 82, 82)
+    console.print("Diretorios inicializados", style=st_success)
 
-    # Cria a network principal
+    # Cria a network principal se não existe
     try:
         docker_cli.networks.get(baker_network)
     except:
@@ -47,11 +50,11 @@ def Inicializa():
 
     console.print("Imagens criadas", style=st_success)
 
-
+    # Verifica se container do Traefik existe e o adiciona a rede, senão, cria o container
     try:
         traefik_container = docker_cli.containers.get('traefik')
         docker_cli.networks.get(baker_network).connect(traefik_container)
-        console.print("Adicionado container Traefik ja existente à network" + baker_network, style=st_success)
+        console.print("Adicionado container Traefik ja existente à network " + baker_network, style=st_success)
         
     except:
         os.makedirs("/srv/docker/traefik")
@@ -77,10 +80,10 @@ def migrarSite(args):
     if( args.dir is not None ):
         if( not os.path.exists(args.dir) ):
             console.print("Diretorio do site nao encontrado", style=st_error)
-            exit()
+            sys.exit()
     else:
         console.print("Insira o diretorio atual do site (--dir)", style=st_error)
-        exit()
+        sys.exit()
 
 
 
@@ -89,11 +92,11 @@ def migrarSite(args):
     server_name, server_uri = buscaUrl(args.dir)
 
     if(server_uri is not None):
-        nginx_vol = '/var/www/{}/'.format(server_uri)
+        containers_volume = '/var/www/{}'.format(server_uri)
         path_rule =  ' && PathPrefix(`/{}`)'.format(server_uri)
         rewrite_str = 'rewrite /{}/?(.*)$ /$1 break;'.format(server_uri)
     else:
-        nginx_vol = '/var/www'
+        containers_volume = '/var/www'
         rewrite_str = ""
         path_rule = ""
         server_uri = ""
@@ -111,27 +114,27 @@ def migrarSite(args):
 
     except FileExistsError:
         console.print("{} já existe".format(novo_site_dir), style=st_error)
-        exit()
+        sys.exit()
 
-    os.makedirs(os.path.join(nginx_dir, slug))
-    shutil.copytree(src="./nginx-files/", dst=os.path.join(nginx_dir, slug), dirs_exist_ok=True)
-    os.mkdir(os.path.join(nginx_dir, slug, "conf.d"))
-    os.system("chown -R 82.82 {}/{}".format(nginx_dir, slug))
+    os.makedirs(os.path.join(nginx_directory, slug))
+    shutil.copytree(src="./nginx-files/", dst=os.path.join(nginx_directory, slug), dirs_exist_ok=True)
+    os.mkdir(os.path.join(nginx_directory, slug, "conf.d"))
+    os.system("chown -R 82.82 {}/{}".format(nginx_directory, slug))
     os.system("find {} -type d -print0 | xargs -0 chmod 755".format(novo_site_dir))
     os.system("find {} -type f -print0 | xargs -0 chmod 644".format(novo_site_dir))
 
     
 
-    gerarTemplateNginx(slug_arg=slug, rewrite_arg=rewrite_str, path=os.path.join(nginx_dir, slug, "conf.d", "main.conf"))
+    gerarTemplateNginx(slug_arg=slug, path=os.path.join(nginx_directory, slug, "conf.d", "main.conf"))
 
 
 
 
 
     try:
-        docker_cli.containers.run('nginx:1.21.6-alpine', detach=True, name="nginx-baker-{}".format(slug),
-                            network='baker-network', volumes={os.path.join(nginx_dir, slug) : {'bind' : '/etc/nginx', 'mode' : 'rw'}
-                                                            , novo_site_dir : {'bind': nginx_vol, 'mode' : 'rw'}},
+        docker_cli.containers.run('nginx:1.21.6-alpine', detach=True, name="baker-nginx-{}".format(slug),
+                            network='baker-network', volumes={os.path.join(nginx_directory, slug) : {'bind' : '/etc/nginx', 'mode' : 'rw'}
+                                                            , novo_site_dir : {'bind': containers_volume, 'mode' : 'rw'}},
                             labels={"traefik.enable" : "true", "traefik.http.routers.{}.rule".format(slug) : "Host(`{}`){}".format(server_name, path_rule),
                                     },
                             restart_policy={"Name" : "always"}
@@ -139,21 +142,26 @@ def migrarSite(args):
         )
     except docker.errors.APIError:
         console.print("Erro ao criar container", style=st_error)
-        exit(1)
+        sys.exit(1)
 
 
     
     try:
-        docker_cli.containers.run('baker:2.8.x' , detach=True, name=slug, 
-                        network='baker-network', volumes={novo_site_dir : {'bind' : nginx_vol , 'mode' : 'rw'}},
+        docker_cli.containers.run('baker:2.8.x' , detach=True, name='baker-{}'.format(slug), 
+                        network='baker-network', volumes={novo_site_dir : {'bind' : containers_volume , 'mode' : 'rw'}},
                         restart_policy={"Name": "always"})
         
-        _, output = docker_cli.containers.get(slug).exec_run("php pre-atualiza.php", workdir=nginx_vol)
-        console.print(output.decode(), style=st_error)
+
+        _, output = docker_cli.containers.get('baker-' + slug).exec_run("php pre-atualiza.php", workdir=containers_volume)
+        output = output.decode('utf-8')
+
+        if(not output == ""):
+            console.print("Erro ao executar o script pre-atualiza.php.\n" + output, style=st_error)
+            sys.exit(1)
         
     except docker.errors.APIError:
         console.print("Erro ao criar container", style=st_error)
-        exit(1)
+        sys.exit(1)
 
 
     console.print("Site {}/{} migrado com sucesso.".format(server_name, server_uri), style=st_success)
@@ -197,15 +205,22 @@ def buscaUrl(dir):
 
 
 def atualizaSite(args):
-    slug = args.slug
     if (args.slug is None):
         console.print("Especificar parametro --slug do site", style=st_error)
-        exit()
+        sys.exit()
     if (args.upgrade_to is None):
         console.print("Especificar parametro --upgrade-to para versão", style=st_error)
-        exit()
+        sys.exit()
+    
+    slug = args.slug
 
-    site_dir = os.path.join(baker_directory, "sites", "teste.com", slug)
+
+    container = docker_cli.containers.get('baker-' + slug)
+    container.reload()
+    site_dir = container.attrs['Mounts'][0]['Source']
+    container_vol = container.attrs['Mounts'][0]['Destination']
+
+
     versao = buscaVersao(site_dir)
     if (parse_version(versao) == parse_version("2.8.1") and parse_version(args.upgrade_to) >= parse_version("2.8.3")): # Atualiza pra 2.8.3
 
@@ -222,8 +237,7 @@ def atualizaSite(args):
         os.system("find {} -type f -print0 | xargs -0 chmod 644".format(site_dir))
 
 
-
-        docker_cli.containers.get(slug).exec_run("php treinamentoesportivo/upgrade-script.php")
+        container.exec_run("php upgrade-script.php", workdir=container_vol)
         os.remove(site_dir + '/upgrade-script.php')
         os.remove(site_dir + '/config.php.new')
 
@@ -235,21 +249,21 @@ def atualizaSite(args):
         shutil.copytree("./cms-baker/2.13.0/", site_dir, dirs_exist_ok=True)
         os.system("chown -R 82.82 " + site_dir)
 
-        old_baker = docker_cli.containers.get(slug)
+        old_baker = docker_cli.containers.get('baker-' + slug)
         
-        old_baker.rename(slug + "-old")
+        old_baker.rename('baker-' + slug + "-old")
 
-        novo_baker = docker_cli.containers.run("baker:2.13.0", detach=True, name=slug, 
+        novo_baker = docker_cli.containers.run("baker:2.13.0", detach=True, name='baker-' + slug, 
                                         network='baker-network',
-                                        volumes={"{}/sites/{}".format(baker_directory, slug) : {'bind' : '/var/www' , 'mode' : 'rw'}},
+                                        volumes={site_dir : {'bind' : container_vol , 'mode' : 'rw'}},
                                         restart_policy={"Name" : "always"})
 
         old_baker.stop()
         old_baker.remove()
-        docker_cli.containers.get("nginx-baker").exec_run("nginx -s reload")
-        novo_baker.exec_run("php install/upgrade-script.php")
+        docker_cli.containers.get("baker-nginx-" + slug).exec_run("nginx -s reload")
+        novo_baker.exec_run("php install/upgrade-script.php", workdir=container_vol)
         time.sleep(1)
-        novo_baker.exec_run("php install/upgrade-script.php")
+        novo_baker.exec_run("php install/upgrade-script.php", workdir=container_vol)
         console.print("WebsiteBaker atualizado para a versão 2.13.0", style=st_success)
 
         
@@ -267,7 +281,7 @@ try:
     docker_cli = docker.from_env()
 except docker.errors.DockerException:
     console.print("Docker daemon não encontrado. Verifique se está rodando", style=st_error)
-    exit()
+    sys.exit()
 
 if (args.cmd == 'init'):
     Inicializa()
