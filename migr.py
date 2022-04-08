@@ -56,7 +56,7 @@ def Inicializa():
         docker_cli.networks.get(baker_network).connect(traefik_container)
         console.print("Adicionado container Traefik ja existente à network " + baker_network, style=st_success)
         
-    except:
+    except docker.errors.NotFound:
         os.makedirs("/srv/docker/traefik")
         shutil.copytree(src="./traefik", dst="/srv/docker/traefik", dirs_exist_ok=True)
         docker_cli.containers.run('traefik:v2.6', name='traefik', detach=True
@@ -94,19 +94,16 @@ def migrarSite(args):
     if(server_uri is not None):
         containers_volume = '/var/www/{}'.format(server_uri)
         path_rule =  ' && PathPrefix(`/{}`)'.format(server_uri)
-        rewrite_str = 'rewrite /{}/?(.*)$ /$1 break;'.format(server_uri)
     else:
         containers_volume = '/var/www'
-        rewrite_str = ""
         path_rule = ""
         server_uri = ""
 
     novo_site_dir = os.path.join(baker_directory, 'sites', server_name, server_uri)
 
     try:
-        #copia arquivos do site
         os.makedirs(novo_site_dir)
-
+        #copia arquivos do site
         shutil.copytree(src=args.dir, dst=novo_site_dir, ignore_dangling_symlinks=True, symlinks=True, dirs_exist_ok=True )
         #copia os arquivos novos (template, modulo separador)
         shutil.copytree(src="./template-baker/", dst=novo_site_dir, dirs_exist_ok=True)
@@ -156,7 +153,7 @@ def migrarSite(args):
         output = output.decode('utf-8')
 
         if(not output == ""):
-            console.print("Erro ao executar o script pre-atualiza.php.\n" + output, style=st_error)
+            console.print("Erro ao executar o script pre-atualiza.php:\n" + output, style=st_error)
             sys.exit(1)
         
     except docker.errors.APIError:
@@ -226,7 +223,7 @@ def atualizaSite(args):
 
         removedirs = ["/admin/preferences/details.php", "/admin/preferences/email.php", "/admin/preferences/password.php"
                     , "/modules/backup", "/modules/droplets/js", "/templates/argos_theme", "/templates/classic_theme", "/templates/wb_theme"
-                    , "/config.php.new", "/install", "/config.php.new"]
+                    ]
 
         for dir in removedirs:
             shutil.rmtree(site_dir + dir, ignore_errors=True)
@@ -240,6 +237,7 @@ def atualizaSite(args):
         container.exec_run("php upgrade-script.php", workdir=container_vol)
         os.remove(site_dir + '/upgrade-script.php')
         os.remove(site_dir + '/config.php.new')
+        shutil.rmtree(site_dir + '/install')
 
         versao = "2.8.3"
         console.print("WebsiteBaker atualizado para a versão 2.8.3", style=st_success)

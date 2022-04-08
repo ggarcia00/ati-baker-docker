@@ -84,6 +84,7 @@ if (isset($template_id) AND $page_id == 4) {
         <link href="<?= TEMPLATE_DIR; ?>/view/resources/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all">
         <link href="<?= TEMPLATE_DIR; ?>/view/resources/css/datepicker.min.css" rel="stylesheet" type="text/css" media="all">
         <link href="<?= TEMPLATE_DIR; ?>/view/resources/css/jquery.bxslider.min.css" rel="stylesheet" type="text/css" media="all">
+        <link rel="shortcut icon" href="<?= TEMPLATE_DIR; ?>/img/favicon.ico" />
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -237,7 +238,7 @@ if (isset($template_id) AND $page_id == 4) {
                             @author Zaka 01/03/2018
                             @description
                             	Retirei o htmlentities porque o Ivan mostrou que estava dando problema nos caracteres do menu do site do gabinete.
-                            	Alteramos também a configuração do site para utf8 no painel de configuração do baker
+                            	Alteramos tambï¿½m a configuraï¿½ï¿½o do site para utf8 no painel de configuraï¿½ï¿½o do baker
                             	Agora teremos que reescrever os menus que ainda estavam com problema
                             */
                             if (DEFAULT_CHARSET == 'utf-8') {
