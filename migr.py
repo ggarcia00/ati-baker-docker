@@ -45,6 +45,7 @@ def Inicializa():
         console.print("Network criada", style=st_success)
 
     # Builda as imagens
+    console.print("Building images... (demora)", style='dim')
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.8.x', target="php56")
     docker_cli.images.build(path="./images/php-baker", rm=True, tag='baker:2.13.0', target="php81")
 
