@@ -1,5 +1,8 @@
 # ati-baker-docker
 
+## Versão python
+```>= 3.8```
+
 ## Como usar
 
 ### Instalar requisitos
