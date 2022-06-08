@@ -187,13 +187,13 @@ def buscaUrl(dir):
     filepath = os.path.join(dir, "config.php")
     if(os.path.exists(filepath)):
         pattern = re.compile('\'http://(.*)\'')
-        with open(filepath, "r") as file:
+        with open(filepath, "r", encoding="ISO-8859-1") as file:
             for line in file:
                 match = pattern.search(line)
                 if match:
                     server_uri = None
                     try:
-                        server_name, server_uri = match.group(1).split('/')
+                        server_name, server_uri = match.group(1).split('/', 1)
                     except:
                         server_name = match.group(1)
                     return server_name, server_uri
