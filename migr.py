@@ -25,7 +25,7 @@ baker_directory = '/srv/docker/baker'
 
 nginx_directory = baker_directory + '/nginx'
 sites_directory = baker_directory + '/sites'
-
+logs_directory = baker_directory + '/logs'
 
 
 
@@ -34,6 +34,8 @@ def Inicializa():
     os.makedirs(nginx_directory, exist_ok=True)
     os.chown(nginx_directory, 82, 82)
     os.makedirs(sites_directory, exist_ok=True)
+    os.chown(sites_directory, 82, 82)
+    os.makedirs(logs_directory, exist_ok=True)
     os.chown(sites_directory, 82, 82)
     console.print("Diretorios inicializados", style=st_success)
 
@@ -71,9 +73,6 @@ def Inicializa():
 
 
 
-
-
-
 def migrarSite(args):
 
 
@@ -90,11 +89,13 @@ def migrarSite(args):
 
 
     slug = os.path.basename(args.dir)
+    container_slug = slug
     server_name, server_uri = buscaUrl(args.dir)
 
     if(server_uri is not None):
         containers_volume = '/var/www/{}'.format(server_uri)
         path_rule =  ' && PathPrefix(`/{}`)'.format(server_uri)
+        container_slug = server_uri.replace("/", "-") 
     else:
         containers_volume = '/var/www'
         path_rule = ""
@@ -105,7 +106,7 @@ def migrarSite(args):
     try:
         os.makedirs(novo_site_dir)
         #copia arquivos do site
-        shutil.copytree(src=args.dir, dst=novo_site_dir, ignore_dangling_symlinks=True, symlinks=True, dirs_exist_ok=True )
+        shutil.copytree(src=args.dir, dst=novo_site_dir, ignore_dangling_symlinks=True, symlinks=True, dirs_exist_ok=True, ignore=shutil.ignore_patterns('uel-novo*', 'portal_*'))
         #copia os arquivos novos (template, modulo separador)
         shutil.copytree(src="./template-baker/", dst=novo_site_dir, dirs_exist_ok=True)
         os.system("chown -R 82.82 " + novo_site_dir)
@@ -114,26 +115,27 @@ def migrarSite(args):
         console.print("{} já existe".format(novo_site_dir), style=st_error)
         sys.exit()
 
-    os.makedirs(os.path.join(nginx_directory, slug))
-    shutil.copytree(src="./nginx-files/", dst=os.path.join(nginx_directory, slug), dirs_exist_ok=True)
-    os.mkdir(os.path.join(nginx_directory, slug, "conf.d"))
-    os.system("chown -R 82.82 {}/{}".format(nginx_directory, slug))
+    os.makedirs(os.path.join(nginx_directory, server_name, server_uri))
+    shutil.copytree(src="./nginx-files/", dst=os.path.join(nginx_directory, server_name, server_uri), dirs_exist_ok=True)
+    os.mkdir(os.path.join(nginx_directory, server_name, server_uri, "conf.d"))
+    os.system("chown -R 82.82 {}/{}".format(nginx_directory, server_name, server_uri))
     os.system("find {} -type d -print0 | xargs -0 chmod 755".format(novo_site_dir))
     os.system("find {} -type f -print0 | xargs -0 chmod 644".format(novo_site_dir))
 
     
 
-    gerarTemplateNginx(slug_arg=slug, path=os.path.join(nginx_directory, slug, "conf.d", "main.conf"))
+    gerarTemplateNginx(slug_arg=container_slug, path=os.path.join(nginx_directory, server_name, server_uri, "conf.d", "main.conf"))
 
 
 
 
 
     try:
-        docker_cli.containers.run('nginx:1.21.6-alpine', detach=True, name="baker-nginx-{}".format(slug),
-                            network='baker-network', volumes={os.path.join(nginx_directory, slug) : {'bind' : '/etc/nginx', 'mode' : 'rw'}
-                                                            , novo_site_dir : {'bind': containers_volume, 'mode' : 'rw'}},
-                            labels={"traefik.enable" : "true", "traefik.http.routers.{}.rule".format(slug) : "Host(`{}`){}".format(server_name, path_rule),
+        docker_cli.containers.run('nginx:1.21.6-alpine', detach=True, name="baker-nginx-{}".format(container_slug),
+                            network='baker-network', volumes={os.path.join(nginx_directory, server_name, server_uri) : {'bind' : '/etc/nginx', 'mode' : 'rw'}
+                                                            , novo_site_dir : {'bind': containers_volume, 'mode' : 'rw'}
+                                                            , os.path.join(logs_directory, server_name, server_uri) : {'bind' : '/var/log/nginx', 'mode' : 'rw'}},
+                            labels={"traefik.enable" : "true", "traefik.http.routers.{}.rule".format(container_slug) : "Host(`{}`){}".format(server_name, path_rule),
                                     },
                             restart_policy={"Name" : "always"}
         
@@ -145,12 +147,12 @@ def migrarSite(args):
 
     
     try:
-        docker_cli.containers.run('baker:2.8.x' , detach=True, name='baker-{}'.format(slug), 
+        docker_cli.containers.run('baker:2.8.x' , detach=True, name='baker-{}'.format(container_slug), 
                         network='baker-network', volumes={novo_site_dir : {'bind' : containers_volume , 'mode' : 'rw'}},
                         restart_policy={"Name": "always"})
         
 
-        _, output = docker_cli.containers.get('baker-' + slug).exec_run("php pre-atualiza.php", workdir=containers_volume)
+        _, output = docker_cli.containers.get('baker-' + container_slug).exec_run("php pre-atualiza.php", workdir=containers_volume)
         output = output.decode('utf-8')
 
         if(not output == ""):
